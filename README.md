@@ -1,5 +1,5 @@
-### Scala Beacons
-
+Scala Beacons
+-------------
 
 This is a web api to create and query beacons metadata. That way we can retrieve a specific position in a public location using any mobile device with WI-FI o BT.
 
