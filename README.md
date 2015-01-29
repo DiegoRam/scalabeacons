@@ -12,3 +12,9 @@ Make sure you already have SBT 0.13 or greater.
 On you go-to browser: localhost:8080
 Doing so, you will into the swagger main page to explore the API’s features.
 
+### Notes
+
+* If you use Intellij (if you don't, you should :)) open the project through build.sbt file
+* You can create Intellij project structure by
+
+        $sbt gen-idea
