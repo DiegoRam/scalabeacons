@@ -1,6 +1,8 @@
 package com.teracode.beacons.services
 
 
+import java.util.UUID
+
 import com.wordnik.swagger.annotations._
 import javax.ws.rs.Path
 import spray.routing.HttpService
@@ -8,6 +10,9 @@ import spray.httpx.Json4sSupport
 
 @Api(value = "/beacon", description = "Operations about beacon.", produces="application/json", position=1)
 trait BeaconService extends HttpService {
+
+  import com.teracode.beacons.Json4sSupport._
+  import MemoryStorage._
 
   val routes = readRoute ~ getBeacon
 
@@ -24,17 +29,19 @@ trait BeaconService extends HttpService {
     complete(s"Put ${id}")
   }}
 
-  @ApiOperation(value = "Get Noe by Id", notes = "", response=classOf[User], nickname = "getNodeByID", httpMethod = "GET")
+  @ApiOperation(value = "Get Node by Id", notes = "", response=classOf[User], nickname = "getNodeByID", httpMethod = "GET")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "Id", value = "ID of Node that needs to be updated", required = true, dataType = "string", paramType = "path")
   ))
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Node does not exist.")
   ))
-  def getBeacon = post { path("beacon" / Segment) { id => { formFields('name, 'status) { (name, status) =>
-    complete(s"Posted $name, $status")
-  }}}}
+  def getBeacon = get { path("beacon" / IntNumber) { id =>
+      complete(beaconList.head)
+    }
+  }
 
 }
 
-case class Beacon(id: String, description: String, status: String)
+case class Beacon(id: UUID, name: String, description: String, status: String, signals: List[Signal] = List[Signal]())
+case class Signal(ssid: String, level: Int)
