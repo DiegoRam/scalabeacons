@@ -18,3 +18,11 @@ Doing so, you will into the swagger main page to explore the API’s features.
 * You can create Intellij project structure by
 
         $sbt gen-idea
+
+### Road.map {
+    case continue(somebody) => somebody should take a look(atWiki)
+    case None => somebody must take(anyway)
+}
+
+
+
