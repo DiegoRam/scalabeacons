@@ -9,7 +9,9 @@ import spray.httpx.Json4sSupport
 @Api(value = "/user", description = "Operations about users.", produces="application/json", position=1)
 trait UserService extends HttpService {
 
-  val routes = updateUser ~ getUser
+  import com.teracode.beacons.Json4sSupport._
+  import MemoryStorage._
+  val routes = updateRoute ~ getRoute
 
   @ApiOperation(value = "Updated user", notes = "This can only be done by the logged in user.", nickname = "updateUser", httpMethod = "PUT")
   @ApiImplicitParams(Array(
@@ -20,7 +22,7 @@ trait UserService extends HttpService {
     new ApiResponse(code = 404, message = "User not found"),
     new ApiResponse(code = 400, message = "Invalid username supplied")
   ))
-  def updateUser = put { path("user" / Segment) { id =>
+  def updateRoute = put { path("user" / Segment) { id =>
     complete(s"Put ${id}")
   }}
 
@@ -32,9 +34,10 @@ trait UserService extends HttpService {
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "User does not exist.")
   ))
-  def getUser = post { path("user" / Segment) { id => { formFields('name, 'status) { (name, status) =>
-    complete(s"Posted $name, $status")
-  }}}}
+  def getRoute = post { path("user" / IntNumber) { id =>
+      complete(userList.head)
+    }
+  }
 
 }
 
