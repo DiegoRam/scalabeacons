@@ -5,8 +5,9 @@ import java.util.UUID
 
 import com.wordnik.swagger.annotations._
 import spray.routing.HttpService
-
+import spray.http.StatusCodes._
 import scala.util.{Failure, Success}
+
 
 @Api(value = "/beacon", description = "Operations about beacon.", produces="application/json", position=1)
 trait BeaconService extends HttpService {
@@ -41,7 +42,11 @@ trait BeaconService extends HttpService {
         entity(as[Beacon]) {
           beacon => {
             detach() {
-              complete(beacon)
+              addBeacon(beacon) match {
+                case Success(x) => complete(x)
+                case Failure(y) => complete(BadRequest, "message error")
+              }
+
             }
           }
         }
@@ -51,7 +56,7 @@ trait BeaconService extends HttpService {
 
   @ApiOperation(value = "Searches for a node", nickname = "searchNode", httpMethod = "GET", produces = "application/json, application/xml")
   def searchRoute = get {
-    path("beacon/search") {
+    path("beacon/search" ) {
       complete(beaconList)
     }
   }
