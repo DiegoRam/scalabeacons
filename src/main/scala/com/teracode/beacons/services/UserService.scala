@@ -1,10 +1,7 @@
 package com.teracode.beacons.services
 
-
 import com.wordnik.swagger.annotations._
-import javax.ws.rs.Path
 import spray.routing.HttpService
-import spray.httpx.Json4sSupport
 
 @Api(value = "/user", description = "Operations about users.", produces="application/json", position=1)
 trait UserService extends HttpService {
