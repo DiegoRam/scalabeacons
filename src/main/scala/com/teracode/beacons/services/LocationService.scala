@@ -7,7 +7,7 @@ import com.wordnik.swagger.annotations._
 import spray.routing.HttpService
 import spray.http.StatusCodes._
 import scala.util.{Failure, Success}
-
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class Location(id: UUID, name: String, description: String, status: String, signals: List[Beacon] = List[Beacon]())
 case class Beacon(ssid: String, level: Int)
@@ -16,7 +16,7 @@ case class Beacon(ssid: String, level: Int)
 trait LocationService extends HttpService {
 
   import com.teracode.beacons.Json4sSupport._
-  import MemoryStorage._
+  import com.teracode.beacons.storage.LocationMemoryStorage
 
   val routes = getRoute ~ searchRoute ~ addRoute ~ deleteRoute
 
@@ -29,11 +29,9 @@ trait LocationService extends HttpService {
   ))
   def getRoute = get {
     path("location" / JavaUUID) { reqId =>
-      detach() {
-        getLocation(reqId) match {
-          case Success(x) => complete(x)
-          case Failure(y) => complete(BadRequest, s"$y")
-        }
+      onComplete(LocationMemoryStorage.get(reqId)) {
+        case Success(x) => complete(x)
+        case Failure(y) => complete(InternalServerError, s"$y")
       }
     }
   }
@@ -50,11 +48,9 @@ trait LocationService extends HttpService {
       decompressRequest() {
         entity(as[Location]) {
           location => {
-            detach() {
-              addLocation(location) match {
-                case Success(x) => complete(x)
-                case Failure(y) => complete(BadRequest, s"$y")
-              }
+            onComplete(LocationMemoryStorage.add(location)) {
+              case Success(x) => complete(x)
+              case Failure(y) => complete(InternalServerError, s"$y")
             }
           }
         }
@@ -65,11 +61,9 @@ trait LocationService extends HttpService {
   @ApiOperation(value = "Searches for a Location", nickname = "searchLocation", httpMethod = "GET", produces = "application/json, application/xml")
   def searchRoute = get {
     path("location" / "search" ) {
-      detach() {
-        searchLocation() match {
-          case Success(x) => complete(x)
-          case Failure(y) => complete(BadRequest, s"$y")
-        }
+      onComplete(LocationMemoryStorage.search()) {
+        case Success(x) => complete(x)
+        case Failure(y) => complete(InternalServerError, s"$y")
       }
     }
   }
@@ -83,11 +77,9 @@ trait LocationService extends HttpService {
   ))
   def deleteRoute = delete {
     path("location" / JavaUUID) { reqId =>
-      detach() {
-        deleteLocation(reqId) match {
-          case Success(x) => complete("")
-          case Failure(y) => complete(BadRequest, s"$y")
-        }
+      onComplete(LocationMemoryStorage.delete(reqId)) {
+        case Success(x) => complete("")
+        case Failure(y) => complete(BadRequest, s"$y")
       }
     }
   }
