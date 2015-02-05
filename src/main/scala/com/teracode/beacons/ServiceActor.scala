@@ -1,7 +1,7 @@
 package com.teracode.beacons
 
 
-import akka.actor.{Actor, ActorSystem, Props, ActorLogging}
+import akka.actor.ActorLogging
 import spray.routing._
 import com.gettyimages.spray.swagger._
 import scala.reflect.runtime.universe._
@@ -14,7 +14,7 @@ class ServiceActor
 
   override def actorRefFactory = context
 
-  val beacons = new BeaconService {
+  val locations = new LocationService {
     def actorRefFactory = context
   }
 
@@ -22,17 +22,17 @@ class ServiceActor
     def actorRefFactory = context
   }
 
-  def receive = runRoute(beacons.routes ~ users.routes ~ swaggerService.routes ~
+  def receive = runRoute(locations.routes ~ users.routes ~ swaggerService.routes ~
     get {
-      pathPrefix("") { pathEndOrSingleSlash {
-        getFromResource("swagger-ui/index.html")
-      }
-      } ~
-        getFromResourceDirectory("swagger-ui")
+      pathPrefix("") {
+        pathEndOrSingleSlash {
+          getFromResource("swagger-ui/index.html")
+        }
+      } ~ getFromResourceDirectory("swagger-ui")
     })
 
   val swaggerService = new SwaggerHttpService {
-    override def apiTypes = Seq(typeOf[BeaconService], typeOf[UserService])
+    override def apiTypes = Seq(typeOf[LocationService], typeOf[UserService])
     override def apiVersion = "0.1"
     override def baseUrl = "/"
     override def docsPath = "api-docs"

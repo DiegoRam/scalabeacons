@@ -1,11 +1,9 @@
 package com.teracode.beacons
 
-import akka.actor.{Actor, ActorSystem, Props, ActorLogging}
+import akka.actor.{ActorSystem, Props, ActorLogging}
 import akka.actor.ActorDSL._
 import akka.io.IO
 import spray.can.Http
-import spray.routing._
-import spray.util._
 import akka.io.Tcp._
 
 object BeaconApp extends App {
@@ -20,5 +18,4 @@ object BeaconApp extends App {
   })
 
   IO(Http).tell(Http.Bind(service, AppConfig.HttpConfig.interface, AppConfig.HttpConfig.port), ioListener)
-
 }
