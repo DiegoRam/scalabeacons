@@ -7,7 +7,6 @@ import spray.routing.HttpService
 trait UserService extends HttpService {
 
   import com.teracode.beacons.Json4sSupport._
-  import MemoryStorage._
   val routes = updateRoute ~ getRoute
 
   @ApiOperation(value = "Updated user", notes = "This can only be done by the logged in user.", nickname = "updateUser", httpMethod = "PUT")
@@ -32,7 +31,7 @@ trait UserService extends HttpService {
     new ApiResponse(code = 404, message = "User does not exist.")
   ))
   def getRoute = post { path("user" / IntNumber) { id =>
-      complete(userList.head)
+      complete("")
     }
   }
 

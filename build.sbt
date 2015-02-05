@@ -20,5 +20,6 @@ libraryDependencies ++= Seq("com.gettyimages" %% "spray-swagger" % "0.5.0",
   "io.spray" %% "spray-testkit" % spray % "test",
   "com.gettyimages" %% "spray-swagger" % "0.5.0",
   "org.json4s" %% "json4s-jackson" % "3.2.10",
-  "com.typesafe" % "config" % "1.2.1"
+  "com.typesafe" % "config" % "1.2.1",
+  "com.sksamuel.elastic4s" %% "elastic4s" % "1.4.11"
 )
