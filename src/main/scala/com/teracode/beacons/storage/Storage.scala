@@ -8,8 +8,8 @@ import java.util.UUID
  * Created by mdtealdi on 05/02/15.
  */
 trait Storage[A] {
-  def add(elem: A): Future[A]
-  def delete(id: UUID): Future[A]
-  def get(id: UUID): Future[A]
+  def add(element: A): Future[UUID]
+  def delete(id: UUID): Future[Boolean]
+  def get(id: UUID): Future[Option[A]]
   def search(): Future[Seq[A]]
 }

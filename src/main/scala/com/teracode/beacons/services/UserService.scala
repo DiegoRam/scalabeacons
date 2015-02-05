@@ -1,12 +1,13 @@
 package com.teracode.beacons.services
 
+import com.teracode.beacons.services.utils.Json4sSupport
 import com.wordnik.swagger.annotations._
 import spray.routing.HttpService
 
 @Api(value = "/user", description = "Operations about users.", produces="application/json", position=1)
 trait UserService extends HttpService {
 
-  import com.teracode.beacons.Json4sSupport._
+  import Json4sSupport._
   val routes = updateRoute ~ getRoute
 
   @ApiOperation(value = "Updated user", notes = "This can only be done by the logged in user.", nickname = "updateUser", httpMethod = "PUT")

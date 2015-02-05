@@ -1,6 +1,5 @@
 package com.teracode.beacons
 
-
 import akka.actor.ActorLogging
 import spray.routing._
 import com.gettyimages.spray.swagger._
@@ -8,9 +7,7 @@ import scala.reflect.runtime.universe._
 import com.wordnik.swagger.model.ApiInfo
 import com.teracode.beacons.services._
 
-class ServiceActor
-  extends HttpServiceActor
-  with ActorLogging {
+class ServiceActor extends HttpServiceActor with ActorLogging {
 
   override def actorRefFactory = context
 

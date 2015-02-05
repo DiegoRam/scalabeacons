@@ -1,40 +1,28 @@
 package com.teracode.beacons.services
 
-
 import java.util.UUID
 
+import com.teracode.beacons.services.utils.Json4sSupport
 import com.wordnik.swagger.annotations._
-import spray.routing.HttpService
+import spray.http.HttpHeaders
 import spray.http.StatusCodes._
-import scala.util.{Failure, Success}
+import spray.http.{HttpEntity, HttpResponse, StatusCodes}
+import spray.routing.HttpService
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 case class Location(id: UUID, name: String, description: String, status: String, signals: List[Beacon] = List[Beacon]())
 case class Beacon(ssid: String, level: Int)
 
-@Api(value = "/location", description = "Operations about location.", produces="application/json", position=1)
+@Api(value = "/locations", description = "Operations about location.", produces="application/json", position=1)
 trait LocationService extends HttpService {
 
-  import com.teracode.beacons.Json4sSupport._
+  import Json4sSupport._
   import com.teracode.beacons.storage.LocationMemoryStorage
 
-  val routes = getRoute ~ searchRoute ~ addRoute ~ deleteRoute
+  val LocationsPath = "locations"
 
-  @ApiOperation(value = "Get location by Id", notes = "", response=classOf[Location], nickname = "getLocationByID", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "id", value = "ID of Location", required = true, dataType = "JavaUUID", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 404, message = "Location does not exist.")
-  ))
-  def getRoute = get {
-    path("location" / JavaUUID) { reqId =>
-      onComplete(LocationMemoryStorage.get(reqId)) {
-        case Success(x) => complete(x)
-        case Failure(y) => complete(InternalServerError, s"$y")
-      }
-    }
-  }
+  val routes = addRoute ~ getRoute ~ deleteRoute ~ searchRoute
 
   @ApiOperation(value = "Add a new Location", nickname = "addLocation", httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
   @ApiImplicitParams(Array(
@@ -44,13 +32,12 @@ trait LocationService extends HttpService {
     new ApiResponse(code = 405, message = "Invalid input")
   ))
   def addRoute = post {
-    path("location") {
-      decompressRequest() {
-        entity(as[Location]) {
-          location => {
-            onComplete(LocationMemoryStorage.add(location)) {
-              case Success(x) => complete(x)
-              case Failure(y) => complete(InternalServerError, s"$y")
+    path(LocationsPath) {
+      requestUri { uri =>
+        decompressRequest() {
+          entity(as[Location]) { location =>
+            onSuccess(LocationMemoryStorage.add(location)) { id =>
+              complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
             }
           }
         }
@@ -58,29 +45,45 @@ trait LocationService extends HttpService {
     }
   }
 
-  @ApiOperation(value = "Searches for a Location", nickname = "searchLocation", httpMethod = "GET", produces = "application/json, application/xml")
-  def searchRoute = get {
-    path("location" / "search" ) {
-      onComplete(LocationMemoryStorage.search()) {
-        case Success(x) => complete(x)
-        case Failure(y) => complete(InternalServerError, s"$y")
+  @ApiOperation(value = "Get Location by Id", notes = "", response=classOf[Location], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "id", value = "Id of Location", required = true, dataType = "JavaUUID", paramType = "path")
+  ))
+  @ApiResponses(Array(
+    new ApiResponse(code = 404, message = "Location not found.")
+  ))
+  def getRoute = get {
+    path(LocationsPath / JavaUUID) { locationId =>
+      onSuccess(LocationMemoryStorage.get(locationId)) {
+        case Some(location)   => complete(location)
+        case None             => complete(NotFound)
       }
     }
   }
 
   @ApiOperation(value = "Deletes a Location", nickname = "deleteLocation", httpMethod = "DELETE")
   @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "id", value = "Location id to delete", required = true, dataType = "JavaUUID", paramType = "path")
+    new ApiImplicitParam(name = "id", value = "Location Id to delete", required = true, dataType = "JavaUUID", paramType = "path")
   ))
   @ApiResponses(Array(
-    new ApiResponse(code = 400, message = "Invalid Location id")
+    new ApiResponse(code = 404, message = "Location for the given ID not found.")
   ))
   def deleteRoute = delete {
-    path("location" / JavaUUID) { reqId =>
-      onComplete(LocationMemoryStorage.delete(reqId)) {
-        case Success(x) => complete("")
-        case Failure(y) => complete(BadRequest, s"$y")
+    path(LocationsPath / JavaUUID) { locationId =>
+      onSuccess(LocationMemoryStorage.delete(locationId)) {
+        case true   => complete(NoContent)
+        case false  => complete(NotFound)
       }
     }
   }
+
+  @ApiOperation(value = "Searches for a Location", nickname = "searchLocation", httpMethod = "GET", produces = "application/json, application/xml")
+  def searchRoute = get {
+    path(LocationsPath) {
+      onSuccess(LocationMemoryStorage.search()) { result =>
+        complete(result)
+      }
+    }
+  }
+
 }

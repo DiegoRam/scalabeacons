@@ -16,26 +16,23 @@ object LocationMemoryStorage extends Storage[Location]{
     UUID.fromString("167e6162-3b6f-4ae2-a171-2470b63dff01") -> Location(UUID.fromString("167e6162-3b6f-4ae2-a171-2470b63dff01"), "MacDonals", "FastFood", "Active", List(Beacon("MacDonalsW", 3), Beacon("Fravega-Wifi", 2)))
   )
 
-  def delete(id: UUID): Future[Location] = Future[Location] {
-    Locations.remove(id) match {
-      case Some(l) => l
-      case None => throw new Error("No such element")
-    }
-  }
-
-  def add(location: Location): Future[Location] = Future[Location] {
+  def add(location: Location): Future[UUID] = Future {
     Locations += (location.id -> location)
-    location
+    location.id
   }
 
-  def get(id: UUID): Future[Location] = Future[Location] {
-    Locations.get(id) match {
-      case Some(l) => l
-      case None => throw new Error("No such element")
+  def get(id: UUID): Future[Option[Location]] = Future {
+    Locations.get(id)
+  }
+
+  def delete(id: UUID): Future[Boolean] = Future {
+    Locations.remove(id) match {
+      case Some(_)  => true
+      case None     => false
     }
   }
 
-  def search(): Future[Seq[Location]] = Future[Seq[Location]] {
+  def search(): Future[Seq[Location]] = Future {
     Locations.values.toList
   }
 }

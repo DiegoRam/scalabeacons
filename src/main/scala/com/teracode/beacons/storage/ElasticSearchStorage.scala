@@ -15,10 +15,9 @@ abstract class ElasticSearchStorage[A] extends Storage[A] {
   val indexName: String
   val clusterName: String
 
-
-  def add(elem: A): Future[A]
-  def delete(id: UUID): Future[A]
-  def get(id: UUID): Future[A]
+  def add(element: A): Future[UUID]
+  def delete(id: UUID): Future[Boolean]
+  def get(id: UUID): Future[Option[A]]
   def search(): Future[Seq[A]]
 }
 
@@ -28,30 +27,26 @@ object LocationESStorage extends ElasticSearchStorage[Location] {
   val indexName = "location"
   val clusterName = ""
 
-  //TODO Sett settings and mappings
+  //TODO Set settings and mappings
 
-  def add(elem: Location): Future[Location] = Future[Location] {
-    Location(UUID.fromString("067e6162-3b6f-4ae2-a171-2470b63dff00"),
-      "Fravega",
-      "Retailer",
-      "Active",
-      List(Beacon("Fravega-Wifi", 3), Beacon("MacDonalsW", 2)))
+  def add(location: Location): Future[UUID] = Future {
+    // Implement function
+    location.id
   }
 
-  def delete(id: UUID): Future[Location] = Future[Location] {
-    Location(UUID.fromString("067e6162-3b6f-4ae2-a171-2470b63dff00"),
-      "Fravega",
-      "Retailer",
-      "Active",
-      List(Beacon("Fravega-Wifi", 3), Beacon("MacDonalsW", 2)))
+  def delete(id: UUID): Future[Boolean] = Future {
+    // Implement function
+    true
   }
 
-  def get(id: UUID): Future[Location] = Future[Location] {
-    Location(UUID.fromString("067e6162-3b6f-4ae2-a171-2470b63dff00"),
+  def get(id: UUID): Future[Option[Location]] = Future {
+    Some(
+      Location(UUID.fromString("067e6162-3b6f-4ae2-a171-2470b63dff00"),
       "Fravega",
       "Retailer",
       "Active",
       List(Beacon("Fravega-Wifi", 3), Beacon("MacDonalsW", 2)))
+    )
   }
 
   def search(): Future[Seq[Location]] = Future[Seq[Location]] {

@@ -1,4 +1,4 @@
-package com.teracode.beacons
+package com.teracode.beacons.conf
 
 import com.typesafe.config.ConfigFactory
 
@@ -7,7 +7,7 @@ object AppConfig {
 
   object HttpConfig {
     private val httpConfig = config.getConfig("http")
-    lazy val interface = httpConfig.getString("interface")
+    lazy val host = httpConfig.getString("host")
     lazy val port = httpConfig.getInt("port")
   }
 }

@@ -1,4 +1,4 @@
-package com.teracode.beacons
+package com.teracode.beacons.services.utils
 
 import java.util.UUID
 
@@ -8,9 +8,7 @@ import spray.httpx.Json4sJacksonSupport
 object Json4sSupport extends Json4sJacksonSupport {
   implicit def json4sJacksonFormats: Formats = jackson.Serialization.formats(NoTypeHints) + new UUIDFormat
 
-  
   val jsonMethods = org.json4s.jackson.JsonMethods
-
 
   class UUIDFormat extends Serializer[UUID] {
     val UUIDClass = classOf[UUID]
