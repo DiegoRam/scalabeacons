@@ -6,6 +6,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import com.sksamuel.elastic4s.ElasticClient
 import java.util.UUID
 import com.teracode.beacons.services.{Beacon, Location}
+
+import com.sksamuel.elastic4s.ElasticDsl._
+import com.sksamuel.elastic4s.mappings.FieldType._
+import com.sksamuel.elastic4s.StopAnalyzer
+
 /**
  * Created by mdtealdi on 05/02/15.
  */
@@ -26,6 +31,21 @@ object LocationESStorage extends ElasticSearchStorage[Location] {
   val client = ElasticClient.local
   val indexName = "location"
   val clusterName = ""
+
+  client.execute {
+    create index indexName mappings (
+      "location" as (
+        "id" typed StringType index NotAnalyzed,
+        "name" typed StringType index NotAnalyzed,
+        "description" typed StringType,
+        "status" typed StringType index NotAnalyzed,
+        "signals" typed NestedType as (
+          "ssid" typed StringType index NotAnalyzed,
+          "level" typed IntegerType index NotAnalyzed
+          )
+        )
+      )
+  }
 
   //TODO Set settings and mappings
 

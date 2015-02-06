@@ -87,3 +87,4 @@ trait LocationService extends HttpService {
   }
 
 }
+

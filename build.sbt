@@ -7,7 +7,6 @@ scalaVersion := "2.11.5"
 libraryDependencies ++= {
   val akkaVersion = "2.3.6"
   val sprayVersion = "1.3.2"
-
   Seq(
     "com.gettyimages" %% "spray-swagger" % "0.5.0",
     "com.github.nscala-time" %% "nscala-time" % "1.2.0",
