@@ -4,8 +4,8 @@
   "description" : "McDonals at Scala Mall, fast food, Burgers  ",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "da007211-52fb-4e89-aa13-2254a5b2c013", "level" : 5},
-    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 1}
+    {"ssid" : "AP4", "level" : 5},
+    {"ssid" : "AP3", "level" : 1}
   ]
 },
 {
@@ -14,8 +14,8 @@
   "description" : "Best Buy at Scala Mall, electronics mobiles computers",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 4},
-    {"ssid" : "da007211-52fb-4e89-aa13-2254a5b2c013", "level" : 2}
+    {"ssid" : "AP3", "level" : 4},
+    {"ssid" : "AP4", "level" : 2}
   ]
 },
 {
@@ -24,8 +24,8 @@
   "description" : "Sunglass Hut at Scala Mall, Sunglass summer beatch look",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 3},
-    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 3}
+    {"ssid" : "AP2", "level" : 3},
+    {"ssid" : "AP3", "level" : 3}
   ]
 },
 {
@@ -34,9 +34,9 @@
   "description" : "GAP at Scala Mall, cloth wear",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 1},
-    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 3},
-    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 3}
+    {"ssid" : "AP1", "level" : 1},
+    {"ssid" : "AP2", "level" : 3},
+    {"ssid" : "AP3", "level" : 3}
   ]
 },
 {
@@ -45,7 +45,7 @@
   "description" : "Footwear at Scala Mall, foot shoes sport",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 1}
+    {"ssid" : "AP1", "level" : 1}
   ]
 },
 {
@@ -54,9 +54,9 @@
   "description" : "Levis at Scala Mall, Urban jean cloth man woman",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 3},
-    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 3},
-    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 1}
+    {"ssid" : "AP1", "level" : 3},
+    {"ssid" : "AP2", "level" : 3},
+    {"ssid" : "AP3", "level" : 1}
   ]
 },
 {
@@ -65,8 +65,8 @@
   "description" : "Victoria Secret at Scala Mall, Shop Sexy Bras, Panties, Sleepwear, Sportswear, Swimwear, Shoes & Beauty",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 2},
-    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 4}
+    {"ssid" : "AP1", "level" : 2},
+    {"ssid" : "AP2", "level" : 4}
   ]
 },
 {
@@ -75,9 +75,9 @@
   "description" : "H&M at Scala Mall, Offers clothing for men, women and children",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 1},
-    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 5},
-    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 1}
+    {"ssid" : "AP1", "level" : 1},
+    {"ssid" : "AP2", "level" : 5},
+    {"ssid" : "AP3", "level" : 1}
   ]
 },
 {
@@ -86,9 +86,9 @@
   "description" : "Swarovski at Scala Mall, jewelry, figurines, ornaments, watches, home accessories, fashion accessories and more, crystal",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 2},
-    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 4},
-    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 2}
+    {"ssid" : "AP1", "level" : 2},
+    {"ssid" : "AP2", "level" : 4},
+    {"ssid" : "AP3", "level" : 2}
   ]
 },
 {
@@ -97,7 +97,7 @@
   "description" : "Adidas at Scala Mall, Sport Messi soccer, Originals, running, football, training cloth and shoes",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 5}
+    {"ssid" : "AP1", "level" : 5}
   ]
 },
 {
@@ -106,8 +106,8 @@
   "description" : "Pizza Hut at Scala Mall, fast food pizza and side dishes",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 4},
-    {"ssid" : "da007211-52fb-4e89-aa13-2254a5b2c013", "level" : 2}
+    {"ssid" : "AP3", "level" : 4},
+    {"ssid" : "AP4", "level" : 2}
   ]
 },
 {
@@ -116,6 +116,6 @@
   "description" : "Dunkin' Donut at Scala Mall, Donut coffee fast food",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "da007211-52fb-4e89-aa13-2254a5b2c013", "level" : 4}
+    {"ssid" : "AP4", "level" : 4}
   ]
 }]
