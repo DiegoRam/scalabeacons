@@ -1,0 +1,121 @@
+[{
+  "id" : "e9fecbb4-11de-4e34-b61a-04e119626535",
+  "name" : "McDonlads",
+  "description" : "McDonals at Scala Mall, fast food, Burgers  ",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "da007211-52fb-4e89-aa13-2254a5b2c013", "level" : 5},
+    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 1}
+  ]
+},
+{
+  "id" : "c284ae05-ce05-4c3d-8080-a4763692b90f",
+  "name" : "Best Buy",
+  "description" : "Best Buy at Scala Mall, electronics mobiles computers",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 4},
+    {"ssid" : "da007211-52fb-4e89-aa13-2254a5b2c013", "level" : 2}
+  ]
+},
+{
+  "id" : "78e9589f-aa49-4781-afdf-7de9a08cd8bd",
+  "name" : "Sunglass Hut",
+  "description" : "Sunglass Hut at Scala Mall, Sunglass summer beatch look",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 3},
+    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 3}
+  ]
+},
+{
+  "id" : "b7856d37-c4e4-439e-8a9f-088ca6af410d",
+  "name" : "GAP",
+  "description" : "GAP at Scala Mall, cloth wear",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 1},
+    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 3},
+    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 3}
+  ]
+},
+{
+  "id" : "1ba5c99e-ddfe-48f6-ac83-53a010c7b92b",
+  "name" : "Footwear",
+  "description" : "Footwear at Scala Mall, foot shoes sport",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 1}
+  ]
+},
+{
+  "id" : "013a2ac8-053e-4e3f-8db3-ee426b6f6a0a",
+  "name" : "Levis",
+  "description" : "Levis at Scala Mall, Urban jean cloth man woman",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 3},
+    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 3},
+    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 1}
+  ]
+},
+{
+  "id" : "50a9500d-170d-4c1b-b923-a03fc10575ff",
+  "name" : "Victoria Secret",
+  "description" : "Victoria Secret at Scala Mall, Shop Sexy Bras, Panties, Sleepwear, Sportswear, Swimwear, Shoes & Beauty",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 2},
+    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 4}
+  ]
+},
+{
+  "id" : "ba130d2d-a540-457b-bc24-609a00a0dcbb",
+  "name" : "H&M",
+  "description" : "H&M at Scala Mall, Offers clothing for men, women and children",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 1},
+    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 5},
+    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 1}
+  ]
+},
+{
+  "id" : "c23b511b-8a04-4b24-8b5d-2d58998515ba",
+  "name" : "Swarovski",
+  "description" : "Swarovski at Scala Mall, jewelry, figurines, ornaments, watches, home accessories, fashion accessories and more, crystal",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 2},
+    {"ssid" : "fb31ba6e-bdf1-4a1f-824e-eb6396607d81", "level" : 4},
+    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 2}
+  ]
+},
+{
+  "id" : "f68ed169-d166-45ee-9727-0a3349baa6c0",
+  "name" : "Adidas",
+  "description" : "Adidas at Scala Mall, Sport Messi soccer, Originals, running, football, training cloth and shoes",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "ee2a7215-f267-400e-a26f-a47851b0ac7e", "level" : 5}
+  ]
+},
+{
+  "id" : "3e2892ea-1900-4032-9388-714387dfdaa2",
+  "name" : "Pizza Hut",
+  "description" : "Pizza Hut at Scala Mall, fast food pizza and side dishes",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "773882c3-6adb-4b50-ad18-952f7c758fe3", "level" : 4},
+    {"ssid" : "da007211-52fb-4e89-aa13-2254a5b2c013", "level" : 2}
+  ]
+},
+{
+  "id" : "263bddd1-b9cf-40f4-abc6-6d85d17d5666",
+  "name" : "Dunkin' Donut",
+  "description" : "Dunkin' Donut at Scala Mall, Donut coffee fast food",
+  "status" : "Active",
+  "signals" : [
+    {"ssid" : "da007211-52fb-4e89-aa13-2254a5b2c013", "level" : 4}
+  ]
+}]
