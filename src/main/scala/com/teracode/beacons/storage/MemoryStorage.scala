@@ -6,15 +6,23 @@ import com.teracode.beacons.services.{Beacon, Location}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import org.json4s.jackson.JsonMethods.parse
+import org.json4s.jvalue2extractable
+import org.json4s.string2JsonInput
+
+import scala.io.Source
+
+import scala.collection.immutable.HashMap
+
 /**
  * Created by diegoram on 2/1/15.
  */
-object LocationMemoryStorage extends Storage[Location]{
+object LocationMemoryStorage extends Storage[Location] {
+  private implicit val format1 = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
+  private val defaultLocationsString = Source.fromFile("src/main/resources/data/Locations.json").getLines().mkString
+  private val defaultLocations = parse(defaultLocationsString).extract[List[Location]]
 
-  private val Locations = mutable.ParHashMap[UUID, Location](
-    UUID.fromString("067e6162-3b6f-4ae2-a171-2470b63dff00") -> Location(UUID.fromString("067e6162-3b6f-4ae2-a171-2470b63dff00"), "Fravega", "Retailer", "Active", List(Beacon("Fravega-Wifi", 3), Beacon("MacDonalsW", 2))),
-    UUID.fromString("167e6162-3b6f-4ae2-a171-2470b63dff01") -> Location(UUID.fromString("167e6162-3b6f-4ae2-a171-2470b63dff01"), "MacDonals", "FastFood", "Active", List(Beacon("MacDonalsW", 3), Beacon("Fravega-Wifi", 2)))
-  )
+  private val Locations = mutable.ParHashMap[UUID, Location](defaultLocations.map(m => (m.id, m)): _*)
 
   def add(location: Location): Future[UUID] = Future {
     Locations += (location.id -> location)
