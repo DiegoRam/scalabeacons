@@ -18,7 +18,7 @@ case class Beacon(ssid: String, level: Int)
 trait LocationService extends HttpService {
 
   import Json4sSupport._
-  import com.teracode.beacons.storage.LocationMemoryStorage
+  import com.teracode.beacons.storage.{LocationESStorage => storage}
 
   val LocationsPath = "locations"
 
@@ -36,7 +36,7 @@ trait LocationService extends HttpService {
       requestUri { uri =>
         decompressRequest() {
           entity(as[Location]) { location =>
-            onSuccess(LocationMemoryStorage.add(location)) { id =>
+            onSuccess(storage.add(location)) { id =>
               complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
             }
           }
@@ -54,7 +54,7 @@ trait LocationService extends HttpService {
   ))
   def getRoute = get {
     path(LocationsPath / JavaUUID) { locationId =>
-      onSuccess(LocationMemoryStorage.get(locationId)) {
+      onSuccess(storage.get(locationId)) {
         case Some(location)   => complete(location)
         case None             => complete(NotFound)
       }
@@ -70,7 +70,7 @@ trait LocationService extends HttpService {
   ))
   def deleteRoute = delete {
     path(LocationsPath / JavaUUID) { locationId =>
-      onSuccess(LocationMemoryStorage.delete(locationId)) {
+      onSuccess(storage.delete(locationId)) {
         case true   => complete(NoContent)
         case false  => complete(NotFound)
       }
@@ -80,7 +80,7 @@ trait LocationService extends HttpService {
   @ApiOperation(value = "Searches for a Location", nickname = "searchLocation", httpMethod = "GET", produces = "application/json, application/xml")
   def searchRoute = get {
     path(LocationsPath) {
-      onSuccess(LocationMemoryStorage.search()) { result =>
+      onSuccess(storage.search()) { result =>
         complete(result)
       }
     }
