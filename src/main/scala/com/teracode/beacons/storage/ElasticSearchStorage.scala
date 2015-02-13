@@ -1,45 +1,36 @@
 package com.teracode.beacons.storage
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.io.Source
-
 import java.util.UUID
 
-import com.teracode.beacons.services.{Beacon, Location}
-
-import com.sksamuel.elastic4s.{ElasticDsl, ElasticClient}
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mappings.FieldType._
-
+import com.sksamuel.elastic4s.{ElasticClient, ElasticDsl}
+import com.teracode.beacons.domain.Location
 import org.json4s.jackson.JsonMethods.parse
-import org.json4s.jvalue2extractable
-import org.json4s.string2JsonInput
+import org.json4s.{jvalue2extractable, string2JsonInput}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.io.Source
 
-/**
- * Created by mdtealdi on 05/02/15.
- */
-abstract class ElasticSearchStorage[A] extends Storage[A] {
-
+trait ElasticSearchStorage {
   val client: ElasticClient
   val indexName: String
   val doctype: String
-
-  def add(element: A): Future[UUID]
-  def delete(id: UUID): Future[Boolean]
-  def get(id: UUID): Future[Option[A]]
-  def search(): Future[Seq[A]]
 }
 
-object LocationESStorage extends ElasticSearchStorage[Location] {
-  implicit val format1 = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
+class BaseLocationESStorage(val client: ElasticClient) extends LocationESStorage {
 
-  val client = ElasticClient.local
-  val indexName = "beacon"
-  val doctype = "location"
+  override implicit val formats = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
 
-  def init() = {
+  init
+  loadDefaultDoc
+
+  def init(): Unit = {
+    client.execute {
+      deleteIndex(indexName)
+    }.await
+
     client.execute {
       create index indexName mappings (
         doctype as(
@@ -68,18 +59,23 @@ object LocationESStorage extends ElasticSearchStorage[Location] {
 
     client.refresh(indexName).await
   }
+}
+
+object LocationESStorage {
+  def apply(client: ElasticClient): LocationESStorage = new BaseLocationESStorage(client)
+}
+
+trait LocationESStorage extends ElasticSearchStorage with CRUDOps[Location] {
+  implicit val formats = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
+
+  val indexName = "beacon"
+  val doctype = "location"
 
   def add(location: Location): Future[UUID] = Future {
     client.execute(
       index into indexName -> doctype doc location
     )
     location.id
-  }
-
-  def delete(reqId: UUID): Future[Boolean] = {
-    client.execute(
-      ElasticDsl.delete id reqId from indexName -> doctype
-    ) map (r => r.isFound)
   }
 
   def get(reqId: UUID): Future[Option[Location]] = {
@@ -91,7 +87,13 @@ object LocationESStorage extends ElasticSearchStorage[Location] {
         case true => None
         case false => Some(parse(r.getSourceAsString).extract[Location])
       }
-    )
+      )
+  }
+
+  def delete(reqId: UUID): Future[Boolean] = {
+    client.execute(
+      ElasticDsl.delete id reqId from indexName -> doctype
+    ) map (r => r.isFound)
   }
 
   def search(): Future[Seq[Location]] = {

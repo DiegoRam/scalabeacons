@@ -1,28 +1,33 @@
-package com.teracode.beacons.services
+package com.teracode.beacons.routing
 
-import java.util.UUID
-
-import com.teracode.beacons.services.utils.Json4sSupport
+import akka.actor.ActorRefFactory
+import com.teracode.beacons.domain.Location
+import com.teracode.beacons.storage.LocationESStorage
 import com.wordnik.swagger.annotations._
-import spray.http.HttpHeaders
 import spray.http.StatusCodes._
-import spray.http.{HttpEntity, HttpResponse, StatusCodes}
+import spray.http.{HttpEntity, HttpHeaders, HttpResponse, StatusCodes}
 import spray.routing.HttpService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-case class Location(id: UUID, name: String, description: String, status: String, signals: List[Beacon] = List[Beacon]())
-case class Beacon(ssid: String, level: Int)
+class BaseLocationService(val locationESStorage: LocationESStorage)(implicit val actorRefFactory: ActorRefFactory) extends LocationService
+
+object LocationService {
+  def apply(locationESStorage: LocationESStorage)(implicit actorRefFactory: ActorRefFactory): LocationService = {
+    new BaseLocationService(locationESStorage)(actorRefFactory)
+  }
+}
 
 @Api(value = "/locations", description = "Operations about location.", produces="application/json", position=1)
 trait LocationService extends HttpService {
 
-  import Json4sSupport._
-  import com.teracode.beacons.storage.{LocationESStorage => storage}
+  import com.teracode.beacons.routing.utils.Json4sSupport._
+
+  val locationESStorage: LocationESStorage
 
   val LocationsPath = "locations"
 
-  val routes = addRoute ~ getRoute ~ deleteRoute ~ searchRoute
+  lazy val route = addRoute ~ getRoute ~ deleteRoute ~ searchRoute
 
   @ApiOperation(value = "Add a new Location", nickname = "addLocation", httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
   @ApiImplicitParams(Array(
@@ -31,12 +36,12 @@ trait LocationService extends HttpService {
   @ApiResponses(Array(
     new ApiResponse(code = 405, message = "Invalid input")
   ))
-  def addRoute = post {
+  lazy val addRoute = post {
     path(LocationsPath) {
       requestUri { uri =>
         decompressRequest() {
           entity(as[Location]) { location =>
-            onSuccess(storage.add(location)) { id =>
+            onSuccess(locationESStorage.add(location)) { id =>
               complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
             }
           }
@@ -45,16 +50,16 @@ trait LocationService extends HttpService {
     }
   }
 
-  @ApiOperation(value = "Get Location by Id", notes = "", response=classOf[Location], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
+  @ApiOperation(value = "Gets a Location by Id", notes = "", response=classOf[Location], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "id", value = "Id of Location", required = true, dataType = "JavaUUID", paramType = "path")
   ))
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Location not found.")
   ))
-  def getRoute = get {
+  lazy val getRoute = get {
     path(LocationsPath / JavaUUID) { locationId =>
-      onSuccess(storage.get(locationId)) {
+      onSuccess(locationESStorage.get(locationId)) {
         case Some(location)   => complete(location)
         case None             => complete(NotFound)
       }
@@ -68,9 +73,9 @@ trait LocationService extends HttpService {
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Location for the given ID not found.")
   ))
-  def deleteRoute = delete {
+  lazy val deleteRoute = delete {
     path(LocationsPath / JavaUUID) { locationId =>
-      onSuccess(storage.delete(locationId)) {
+      onSuccess(locationESStorage.delete(locationId)) {
         case true   => complete(NoContent)
         case false  => complete(NotFound)
       }
@@ -78,9 +83,9 @@ trait LocationService extends HttpService {
   }
 
   @ApiOperation(value = "Searches for a Location", nickname = "searchLocation", httpMethod = "GET", produces = "application/json, application/xml")
-  def searchRoute = get {
+  lazy val searchRoute = get {
     path(LocationsPath) {
-      onSuccess(storage.search()) { result =>
+      onSuccess(locationESStorage.search()) { result =>
         complete(result)
       }
     }

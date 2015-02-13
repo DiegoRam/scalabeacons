@@ -1,4 +1,4 @@
-package com.teracode.beacons.services.utils
+package com.teracode.beacons.routing.utils
 
 import java.util.UUID
 
