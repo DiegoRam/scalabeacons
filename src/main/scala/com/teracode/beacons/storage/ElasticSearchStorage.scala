@@ -108,7 +108,7 @@ trait LocationESStorage extends ElasticSearchStorage with LocationStorage {
     }
   }
 
-  def search(ss: LocationSearchByBeacons): Future[Seq[Location]] = {
+  def search(ss: LocationSearchByBeacons): Future[Seq[Hit[Location]]] = {
 
     def BeaconToNestedQueryDefinition(b: Beacon): QueryDefinition = {
       nestedQuery("signals").query {
@@ -131,19 +131,19 @@ trait LocationESStorage extends ElasticSearchStorage with LocationStorage {
       } from 0 size 1000
     )
     f map { sr =>
-      sr.getHits.hits().toSeq map (l => parse(l.sourceAsString()).extract[Location])
+      sr.getHits.hits().toSeq map (l => Hit[Location](l.getScore.toDouble, parse(l.sourceAsString()).extract[Location]))
     }
   }
 
 
-  def search(searchString: String): Future[Seq[Location]] = {
+  def search(searchString: String): Future[Seq[Hit[Location]]] = {
     val f = client.execute(
       ElasticDsl.search in indexName -> doctype query {
         matchQuery("description", searchString)
       } from 0 size 1000
     )
     f map { sr =>
-      sr.getHits.hits().toSeq map (l => parse(l.sourceAsString()).extract[Location])
+      sr.getHits.hits().toSeq map (l => Hit[Location](l.getScore.toDouble, parse(l.sourceAsString()).extract[Location]))
     }
   }
 
