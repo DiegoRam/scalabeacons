@@ -1,11 +1,13 @@
 package com.teracode.beacons.storage
 
-import java.util.UUID
-
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mappings.FieldType._
-import com.sksamuel.elastic4s.{ElasticClient, ElasticDsl}
-import com.teracode.beacons.domain.Location
+import com.sksamuel.elastic4s.{QueryDefinition, ElasticDsl, ElasticClient}
+
+import com.teracode.beacons.domain.{Location, Beacon, LocationSearchByBeacons}
+
+import java.util.UUID
+
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.{jvalue2extractable, string2JsonInput}
 
@@ -23,16 +25,17 @@ class BaseLocationESStorage(val client: ElasticClient) extends LocationESStorage
 
   override implicit val formats = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
 
-  init
-  loadDefaultDoc
+  init()
+  loadDefaultDoc()
 
-  def init(): Unit = {
-    client.execute {
-      deleteIndex(indexName)
-    }.await
+  private def init(): Unit = {
+    val b = client.exists( indexName ).map({ r => r.isExists }).await
+    if (!b) createIndex()
+  }
 
+  private def createIndex() = {
     client.execute {
-      create index indexName mappings (
+      ElasticDsl.create index indexName mappings (
         doctype as(
           "id" typed StringType index NotAnalyzed,
           "name" typed StringType index NotAnalyzed,
@@ -47,7 +50,7 @@ class BaseLocationESStorage(val client: ElasticClient) extends LocationESStorage
     }.await
   }
 
-  def loadDefaultDoc(): Unit = {
+  private def loadDefaultDoc(): Unit = {
     val defaultLocationsString = Source.fromFile("src/main/resources/data/Locations.json").getLines().mkString
     val defaultLocations = parse(defaultLocationsString).extract[List[Location]]
 
@@ -62,23 +65,23 @@ class BaseLocationESStorage(val client: ElasticClient) extends LocationESStorage
 }
 
 object LocationESStorage {
-  def apply(client: ElasticClient): LocationESStorage = new BaseLocationESStorage(client)
+  def apply(client: ElasticClient): LocationStorage = new BaseLocationESStorage(client)
 }
 
-trait LocationESStorage extends ElasticSearchStorage with CRUDOps[Location] {
+trait LocationESStorage extends ElasticSearchStorage with LocationStorage {
   implicit val formats = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
 
   val indexName = "beacon"
   val doctype = "location"
 
-  def add(location: Location): Future[UUID] = Future {
+  def create(location: Location): Future[UUID] = Future {
     client.execute(
       index into indexName -> doctype doc location
     )
     location.id
   }
 
-  def get(reqId: UUID): Future[Option[Location]] = {
+  def retrieve(reqId: UUID): Future[Option[Location]] = {
     val f = client.execute(
       ElasticDsl.get id reqId from indexName -> doctype
     )
@@ -96,12 +99,51 @@ trait LocationESStorage extends ElasticSearchStorage with CRUDOps[Location] {
     ) map (r => r.isFound)
   }
 
-  def search(): Future[Seq[Location]] = {
+  def retrieveAll(): Future[Seq[Location]] = {
     val f = client.execute(
-      ElasticDsl.search in indexName -> doctype query matchall
+      ElasticDsl.search in indexName -> doctype query matchall from 0 size 1000
     )
     f map { sr =>
       sr.getHits.hits().toSeq map (l => parse(l.sourceAsString()).extract[Location])
+    }
+  }
+
+  def search(ss: LocationSearchByBeacons): Future[Seq[Hit[Location]]] = {
+
+    def BeaconToNestedQueryDefinition(b: Beacon): QueryDefinition = {
+      nestedQuery("signals").query {
+        must (
+          termQuery("ssid", b.ssid),
+          termQuery("level", b.level)
+        )
+      }
+    }
+
+    def BeaconToNestedDecayQueryDefinition(b: Beacon): QueryDefinition = {
+      nestedQuery("signals").query {
+        functionScoreQuery(matchQuery("ssid", b.ssid)) scorers linearScore("level", b.level.toString, "0.2").offset(0.1)
+      }
+    }
+
+    val f = client.execute(
+      ElasticDsl.search in indexName -> doctype query {
+        should ( ss.beacons.map(b => BeaconToNestedDecayQueryDefinition(b)): _*)
+      } from 0 size 1000
+    )
+    f map { sr =>
+      sr.getHits.hits().toSeq map (l => Hit[Location](l.getScore.toDouble, parse(l.sourceAsString()).extract[Location]))
+    }
+  }
+
+
+  def search(searchString: String): Future[Seq[Hit[Location]]] = {
+    val f = client.execute(
+      ElasticDsl.search in indexName -> doctype query {
+        matchQuery("description", searchString)
+      } from 0 size 1000
+    )
+    f map { sr =>
+      sr.getHits.hits().toSeq map (l => Hit[Location](l.getScore.toDouble, parse(l.sourceAsString()).extract[Location]))
     }
   }
 

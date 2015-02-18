@@ -61,8 +61,7 @@ trait ApiCore extends RouteConcatenation {
 
   private implicit val _ = system.dispatcher
 
-  val routes =
-    LocationService(locationESStorage).routes
+  val routes = LocationService(locationESStorage).routes
 
   val serviceActor = system.actorOf(RoutedHttpService.props(routes))
 
