@@ -109,7 +109,7 @@ trait LocationService extends HttpService {
 
   @ApiOperation(value = "Searchs Locations by Signals", nickname = "SignalsLocationSearch", position = 5, httpMethod = "POST", consumes = "application/json", produces = "application/json, application/xml")
   @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "signals", value = "List of Beacon", required = true, dataType = "SignalSearch", paramType = "body")
+    new ApiImplicitParam(name = "signals", value = "List of Beacon", required = true, dataType = "LocationSearchByBeacons", paramType = "body")
   ))
   @Path("/signal-search")
   def signalSearchRoute = post {
