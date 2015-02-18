@@ -28,7 +28,7 @@ trait LocationService extends HttpService {
 
   val LocationsPath = "locations"
 
-  val routes = addRoute ~ getRoute ~ deleteRoute ~ searchRoute ~ SignalSearchRoute ~ DescriptionSearch
+  val routes = addRoute ~ getRoute ~ deleteRoute ~ searchRoute ~ signalSearchRoute ~ descriptionSearchRoute
 
   @ApiOperation(value = "Gets a Location by Id", notes = "", position = 1, response=classOf[Location], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
   @ApiImplicitParams(Array(
@@ -83,19 +83,16 @@ trait LocationService extends HttpService {
     }
   }
 
-  @ApiOperation(value = "Search Location by description", nickname = "DescriptionLocationSearch", position = 4, httpMethod = "POST", consumes = "application/json", produces = "application/json, application/xml")
+  @ApiOperation(value = "Search Location by description", nickname = "DescriptionLocationSearch", position = 4, httpMethod = "GET", produces = "application/json, application/xml")
   @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "Description", value = "Description", required = true, dataType = "String", paramType = "body")
+    new ApiImplicitParam(name = "Description", value = "Description String", required = true, dataType = "String", paramType = "query")
   ))
   @Path("/search")
-  def DescriptionSearch = get {
-    path(LocationsPath / "search") {
-      decompressRequest() {
-        entity(as[String]) { str =>
-          onSuccess(storage.search(str)) { result =>
-            complete(result)
-          }
-        }
+  def descriptionSearchRoute = get {
+    path(LocationsPath / "search")
+      parameters('Description) { str =>
+        onSuccess(storage.search(str)) { result =>
+        complete(result)
       }
     }
   }
@@ -105,7 +102,7 @@ trait LocationService extends HttpService {
     new ApiImplicitParam(name = "signals", value = "List of Beacon", required = true, dataType = "SignalSearch", paramType = "body")
   ))
   @Path("/signalsearch")
-  def SignalSearchRoute = get {
+  def signalSearchRoute = post {
     path(LocationsPath / "signalsearch") {
       decompressRequest() {
         entity(as[SignalSearch]) { signalSearch =>

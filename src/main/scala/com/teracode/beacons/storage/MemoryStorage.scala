@@ -41,11 +41,11 @@ object LocationMemoryStorage extends LocationStorage {
     Locations.values.toList
   }
 
-  def search(des: String): Future[Seq[Location]] = Future {
-    Locations.values.toList
+  def search(des: String): Future[Seq[Hit[Location]]] = Future {
+    Locations.values.toList map (Hit[Location](1.0, _))
   }
 
-  def search(ss: SignalSearch): Future[Seq[Location]] = Future {
-    Locations.values.toList
+  def search(ss: SignalSearch): Future[Seq[Hit[Location]]] = Future {
+    Locations.values.toList map (Hit[Location](1.0, _))
   }
 }

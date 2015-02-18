@@ -13,9 +13,11 @@ trait CRUDOps[A] {
 
 }
 
+case class Hit[A](score: Double, source: A)
+
 trait SearchOps[A] {
-  def search(query: String): Future[Seq[A]]
-  def search(ss: SignalSearch): Future[Seq[A]]
+  def search(query: String): Future[Seq[Hit[A]]]
+  def search(ss: SignalSearch): Future[Seq[Hit[A]]]
 }
 
 trait LocationStorage extends CRUDOps[Location] with SearchOps[Location]
