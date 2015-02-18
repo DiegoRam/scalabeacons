@@ -11,11 +11,11 @@ import spray.routing.HttpService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BaseLocationService(val storage: LocationESStorage)(implicit val actorRefFactory: ActorRefFactory) extends LocationService
+class BaseLocationService(val storage: CRUDOps[Location])(implicit val actorRefFactory: ActorRefFactory) extends LocationService
 
 object LocationService {
-  def apply(locationESStorage: LocationESStorage)(implicit actorRefFactory: ActorRefFactory): LocationService = {
-    new BaseLocationService(locationESStorage)(actorRefFactory)
+  def apply(storage: CRUDOps[Location])(implicit actorRefFactory: ActorRefFactory): LocationService = {
+    new BaseLocationService(storage)(actorRefFactory)
   }
 }
 
