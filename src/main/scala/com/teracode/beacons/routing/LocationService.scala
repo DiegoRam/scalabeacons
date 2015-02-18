@@ -27,7 +27,7 @@ trait LocationService extends HttpService {
 
   val LocationsPath = "locations"
 
-  lazy val route = addRoute ~ getRoute ~ deleteRoute ~ searchRoute
+  val routes = addRoute ~ getRoute ~ deleteRoute ~ searchRoute
 
   @ApiOperation(value = "Add a new Location", nickname = "addLocation", httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
   @ApiImplicitParams(Array(
@@ -36,7 +36,7 @@ trait LocationService extends HttpService {
   @ApiResponses(Array(
     new ApiResponse(code = 405, message = "Invalid input")
   ))
-  lazy val addRoute = post {
+  def addRoute = post {
     path(LocationsPath) {
       requestUri { uri =>
         decompressRequest() {
@@ -57,7 +57,7 @@ trait LocationService extends HttpService {
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Location not found.")
   ))
-  lazy val getRoute = get {
+  def getRoute = get {
     path(LocationsPath / JavaUUID) { locationId =>
       onSuccess(locationESStorage.get(locationId)) {
         case Some(location)   => complete(location)
@@ -73,7 +73,7 @@ trait LocationService extends HttpService {
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Location for the given ID not found.")
   ))
-  lazy val deleteRoute = delete {
+  def deleteRoute = delete {
     path(LocationsPath / JavaUUID) { locationId =>
       onSuccess(locationESStorage.delete(locationId)) {
         case true   => complete(NoContent)
@@ -83,7 +83,7 @@ trait LocationService extends HttpService {
   }
 
   @ApiOperation(value = "Searches for a Location", nickname = "searchLocation", httpMethod = "GET", produces = "application/json, application/xml")
-  lazy val searchRoute = get {
+  def searchRoute = get {
     path(LocationsPath) {
       onSuccess(locationESStorage.search()) { result =>
         complete(result)

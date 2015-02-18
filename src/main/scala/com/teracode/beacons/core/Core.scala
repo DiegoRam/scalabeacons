@@ -25,7 +25,7 @@ trait BootedCore extends Core {
   /**
    * Construct the ActorSystem we will use in our application
    */
-  implicit lazy val system = ActorSystem("beacons-system")
+  implicit val system = ActorSystem("beacons-system")
 
   val ioListener = actor("io-listener")(new Act with ActorLogging {
     become {
@@ -36,7 +36,7 @@ trait BootedCore extends Core {
   /**
    * Ensure that the constructed ActorSystem is shut down when the JVM shuts down
    */
-  sys.addShutdownHook(system.shutdown())
+  //sys.addShutdownHook(system.shutdown())
 }
 
 trait SettingsCore {
@@ -62,7 +62,7 @@ trait ApiCore extends RouteConcatenation {
   private implicit val _ = system.dispatcher
 
   val routes =
-    LocationService(locationESStorage).route
+    LocationService(locationESStorage).routes
 
   val serviceActor = system.actorOf(RoutedHttpService.props(routes))
 

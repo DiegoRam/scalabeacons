@@ -23,11 +23,11 @@ case class ErrorResponseException(responseStatus: StatusCode, response: Option[H
  * Allows you to construct Spray ``HttpService`` from a concatenation of routes; and wires in the error handler.
  * It also logs all internal server errors using ``SprayActorLogging``.
  *
- * @param route the (concatenated) route
+ * @param routes the (concatenated) route
  */
-class RoutedHttpService(routes: Route) extends Actor with HttpService with ActorLogging {
+class RoutedHttpService(routes: Route) extends HttpServiceActor with ActorLogging {
 
-  implicit def actorRefFactory = context
+  override def actorRefFactory = context
 
   implicit val handler = ExceptionHandler {
     case NonFatal(ErrorResponseException(statusCode, entity)) => ctx =>
@@ -50,7 +50,7 @@ class RoutedHttpService(routes: Route) extends Actor with HttpService with Actor
       "TOC Url", "Diego Ramirez", "Apache V2", "http://www.apache.org/licenses/LICENSE-2.0"))
   }
 
-  lazy val route =
+  val route =
     routes ~
     swaggerService.routes ~
     get {
