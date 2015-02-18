@@ -88,7 +88,7 @@ trait LocationService extends HttpService {
     new ApiImplicitParam(name = "Description", value = "Description", required = true, dataType = "String", paramType = "body")
   ))
   @Path("/search")
-  def DescriptionSearch = post {
+  def DescriptionSearch = get {
     path(LocationsPath / "search") {
       decompressRequest() {
         entity(as[String]) { str =>
@@ -105,7 +105,7 @@ trait LocationService extends HttpService {
     new ApiImplicitParam(name = "signals", value = "List of Beacon", required = true, dataType = "SignalSearch", paramType = "body")
   ))
   @Path("/signalsearch")
-  def SignalSearchRoute = post {
+  def SignalSearchRoute = get {
     path(LocationsPath / "signalsearch") {
       decompressRequest() {
         entity(as[SignalSearch]) { signalSearch =>
