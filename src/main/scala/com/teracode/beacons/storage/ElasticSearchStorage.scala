@@ -4,7 +4,7 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.{QueryDefinition, ElasticDsl, ElasticClient}
 
-import com.teracode.beacons.domain.{Location, Beacon, SignalSearch}
+import com.teracode.beacons.domain.{Location, Beacon, LocationSearchByBeacons}
 
 import java.util.UUID
 
@@ -50,7 +50,7 @@ class BaseLocationESStorage(val client: ElasticClient) extends LocationESStorage
     }.await
   }
 
-  def loadDefaultDoc(): Unit = {
+  private def loadDefaultDoc(): Unit = {
     val defaultLocationsString = Source.fromFile("src/main/resources/data/Locations.json").getLines().mkString
     val defaultLocations = parse(defaultLocationsString).extract[List[Location]]
 
@@ -108,7 +108,7 @@ trait LocationESStorage extends ElasticSearchStorage with LocationStorage {
     }
   }
 
-  def search(ss: SignalSearch): Future[Seq[Location]] = {
+  def search(ss: LocationSearchByBeacons): Future[Seq[Location]] = {
 
     def BeaconToNestedQueryDefinition(b: Beacon): QueryDefinition = {
       nestedQuery("signals").query {
@@ -127,7 +127,7 @@ trait LocationESStorage extends ElasticSearchStorage with LocationStorage {
 
     val f = client.execute(
       ElasticDsl.search in indexName -> doctype query {
-        should ( ss.signals.map(b => BeaconToNestedDecayQueryDefinition(b)): _*)
+        should ( ss.beacons.map(b => BeaconToNestedDecayQueryDefinition(b)): _*)
       } from 0 size 1000
     )
     f map { sr =>

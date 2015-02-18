@@ -1,6 +1,6 @@
 package com.teracode.beacons.storage
 
-import com.teracode.beacons.domain.{Location, SignalSearch}
+import com.teracode.beacons.domain.{Location, LocationSearchByBeacons}
 import java.util.UUID
 import scala.concurrent.Future
 
@@ -15,7 +15,7 @@ trait CRUDOps[A] {
 
 trait SearchOps[A] {
   def search(query: String): Future[Seq[A]]
-  def search(ss: SignalSearch): Future[Seq[A]]
+  def search(ss: LocationSearchByBeacons): Future[Seq[A]]
 }
 
 trait LocationStorage extends CRUDOps[Location] with SearchOps[Location]
