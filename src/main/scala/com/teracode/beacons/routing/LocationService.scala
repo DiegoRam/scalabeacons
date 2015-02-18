@@ -2,7 +2,7 @@ package com.teracode.beacons.routing
 
 import akka.actor.ActorRefFactory
 import com.teracode.beacons.domain.{SignalSearch, Location}
-import com.teracode.beacons.storage.{CRUDOps, LocationESStorage}
+import com.teracode.beacons.storage.{LocationStorage, CRUDOps, LocationESStorage}
 import com.wordnik.swagger.annotations._
 import javax.ws.rs.Path
 import spray.http.StatusCodes._
@@ -11,10 +11,10 @@ import spray.routing.HttpService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BaseLocationService(val storage: CRUDOps[Location])(implicit val actorRefFactory: ActorRefFactory) extends LocationService
+class BaseLocationService(val storage: LocationStorage)(implicit val actorRefFactory: ActorRefFactory) extends LocationService
 
 object LocationService {
-  def apply(storage: CRUDOps[Location])(implicit actorRefFactory: ActorRefFactory): LocationService = {
+  def apply(storage: LocationStorage)(implicit actorRefFactory: ActorRefFactory): LocationService = {
     new BaseLocationService(storage)(actorRefFactory)
   }
 }
@@ -24,7 +24,7 @@ trait LocationService extends HttpService {
 
   import com.teracode.beacons.routing.utils.Json4sSupport._
 
-  val storage: CRUDOps[Location]
+  val storage: LocationStorage
 
   val LocationsPath = "locations"
 
@@ -39,7 +39,7 @@ trait LocationService extends HttpService {
   ))
   def getRoute = get {
     path(LocationsPath / JavaUUID) { locationId =>
-      onSuccess(storage.get(locationId)) {
+      onSuccess(storage.retrieve(locationId)) {
         case Some(location)   => complete(location)
         case None             => complete(NotFound)
       }
@@ -58,7 +58,7 @@ trait LocationService extends HttpService {
       requestUri { uri =>
         decompressRequest() {
           entity(as[Location]) { location =>
-            onSuccess(storage.add(location)) { id =>
+            onSuccess(storage.create(location)) { id =>
               complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
             }
           }
@@ -121,7 +121,7 @@ trait LocationService extends HttpService {
   @ApiOperation(value = "Searches for all Location", nickname = "search all Location", position = 6, httpMethod = "GET", produces = "application/json, application/xml")
   def searchRoute = get {
     path(LocationsPath) {
-      onSuccess(storage.search()) { result =>
+      onSuccess(storage.retrieveAll()) { result =>
         complete(result)
       }
     }

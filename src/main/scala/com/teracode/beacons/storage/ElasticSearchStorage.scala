@@ -28,14 +28,14 @@ class BaseLocationESStorage(val client: ElasticClient) extends LocationESStorage
   init()
   loadDefaultDoc()
 
-  def init(): Unit = {
+  private def init(): Unit = {
     val b = client.exists( indexName ).map({ r => r.isExists }).await
     if (!b) createIndex()
   }
 
   private def createIndex() = {
     client.execute {
-      create index indexName mappings (
+      ElasticDsl.create index indexName mappings (
         doctype as(
           "id" typed StringType index NotAnalyzed,
           "name" typed StringType index NotAnalyzed,
@@ -65,23 +65,23 @@ class BaseLocationESStorage(val client: ElasticClient) extends LocationESStorage
 }
 
 object LocationESStorage {
-  def apply(client: ElasticClient): LocationESStorage = new BaseLocationESStorage(client)
+  def apply(client: ElasticClient): LocationStorage = new BaseLocationESStorage(client)
 }
 
-trait LocationESStorage extends ElasticSearchStorage with CRUDOps[Location] {
+trait LocationESStorage extends ElasticSearchStorage with LocationStorage {
   implicit val formats = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
 
   val indexName = "beacon"
   val doctype = "location"
 
-  def add(location: Location): Future[UUID] = Future {
+  def create(location: Location): Future[UUID] = Future {
     client.execute(
       index into indexName -> doctype doc location
     )
     location.id
   }
 
-  def get(reqId: UUID): Future[Option[Location]] = {
+  def retrieve(reqId: UUID): Future[Option[Location]] = {
     val f = client.execute(
       ElasticDsl.get id reqId from indexName -> doctype
     )
@@ -99,7 +99,7 @@ trait LocationESStorage extends ElasticSearchStorage with CRUDOps[Location] {
     ) map (r => r.isFound)
   }
 
-  def search(): Future[Seq[Location]] = {
+  def retrieveAll(): Future[Seq[Location]] = {
     val f = client.execute(
       ElasticDsl.search in indexName -> doctype query matchall from 0 size 1000
     )
