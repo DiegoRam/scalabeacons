@@ -20,7 +20,6 @@ libraryDependencies ++= {
     "io.spray" %% "spray-routing" % sprayVersion,
     "io.spray" %% "spray-client" % sprayVersion,
     "io.spray" %% "spray-testkit" % sprayVersion % "test",
-    "com.gettyimages" %% "spray-swagger" % "0.5.0",
     "org.json4s" %% "json4s-jackson" % json4sVersion,
     "org.json4s" %% "json4s-native" % json4sVersion,
     "org.json4s" %% "json4s-ext" % json4sVersion,

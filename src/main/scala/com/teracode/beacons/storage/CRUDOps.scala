@@ -1,8 +1,8 @@
 package com.teracode.beacons.storage
 
-import scala.concurrent.Future
-import com.sksamuel.elastic4s.ElasticClient
+import com.teracode.beacons.domain.SignalSearch
 import java.util.UUID
+import scala.concurrent.Future
 
 /**
  * Created by mdtealdi on 05/02/15.
@@ -12,4 +12,6 @@ trait CRUDOps[A] {
   def delete(id: UUID): Future[Boolean]
   def get(id: UUID): Future[Option[A]]
   def search(): Future[Seq[A]]
+  def search(desc: String): Future[Seq[A]]
+  def search(ss: SignalSearch): Future[Seq[A]]
 }

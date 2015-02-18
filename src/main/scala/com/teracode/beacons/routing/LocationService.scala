@@ -1,16 +1,17 @@
 package com.teracode.beacons.routing
 
 import akka.actor.ActorRefFactory
-import com.teracode.beacons.domain.Location
-import com.teracode.beacons.storage.LocationESStorage
+import com.teracode.beacons.domain.{SignalSearch, Location}
+import com.teracode.beacons.storage.{CRUDOps, LocationESStorage}
 import com.wordnik.swagger.annotations._
+import javax.ws.rs.Path
 import spray.http.StatusCodes._
 import spray.http.{HttpEntity, HttpHeaders, HttpResponse, StatusCodes}
 import spray.routing.HttpService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BaseLocationService(val locationESStorage: LocationESStorage)(implicit val actorRefFactory: ActorRefFactory) extends LocationService
+class BaseLocationService(val storage: LocationESStorage)(implicit val actorRefFactory: ActorRefFactory) extends LocationService
 
 object LocationService {
   def apply(locationESStorage: LocationESStorage)(implicit actorRefFactory: ActorRefFactory): LocationService = {
@@ -23,13 +24,29 @@ trait LocationService extends HttpService {
 
   import com.teracode.beacons.routing.utils.Json4sSupport._
 
-  val locationESStorage: LocationESStorage
+  val storage: CRUDOps[Location]
 
   val LocationsPath = "locations"
 
-  val routes = addRoute ~ getRoute ~ deleteRoute ~ searchRoute
+  val routes = addRoute ~ getRoute ~ deleteRoute ~ searchRoute ~ SignalSearchRoute ~ DescriptionSearch
 
-  @ApiOperation(value = "Add a new Location", nickname = "addLocation", httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
+  @ApiOperation(value = "Gets a Location by Id", notes = "", position = 1, response=classOf[Location], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "id", value = "Id of Location", required = true, dataType = "JavaUUID", paramType = "path")
+  ))
+  @ApiResponses(Array(
+    new ApiResponse(code = 404, message = "Location not found.")
+  ))
+  def getRoute = get {
+    path(LocationsPath / JavaUUID) { locationId =>
+      onSuccess(storage.get(locationId)) {
+        case Some(location)   => complete(location)
+        case None             => complete(NotFound)
+      }
+    }
+  }
+
+  @ApiOperation(value = "Add a new Location", nickname = "addLocation", position = 2, httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "body", value = "Location object to be added", dataType = "Location", required = true, paramType = "body")
   ))
@@ -41,7 +58,7 @@ trait LocationService extends HttpService {
       requestUri { uri =>
         decompressRequest() {
           entity(as[Location]) { location =>
-            onSuccess(locationESStorage.add(location)) { id =>
+            onSuccess(storage.add(location)) { id =>
               complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
             }
           }
@@ -50,23 +67,7 @@ trait LocationService extends HttpService {
     }
   }
 
-  @ApiOperation(value = "Gets a Location by Id", notes = "", response=classOf[Location], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
-  @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "id", value = "Id of Location", required = true, dataType = "JavaUUID", paramType = "path")
-  ))
-  @ApiResponses(Array(
-    new ApiResponse(code = 404, message = "Location not found.")
-  ))
-  def getRoute = get {
-    path(LocationsPath / JavaUUID) { locationId =>
-      onSuccess(locationESStorage.get(locationId)) {
-        case Some(location)   => complete(location)
-        case None             => complete(NotFound)
-      }
-    }
-  }
-
-  @ApiOperation(value = "Deletes a Location", nickname = "deleteLocation", httpMethod = "DELETE")
+  @ApiOperation(value = "Deletes a Location", nickname = "deleteLocation", position = 3, httpMethod = "DELETE")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "id", value = "Location Id to delete", required = true, dataType = "JavaUUID", paramType = "path")
   ))
@@ -75,21 +76,61 @@ trait LocationService extends HttpService {
   ))
   def deleteRoute = delete {
     path(LocationsPath / JavaUUID) { locationId =>
-      onSuccess(locationESStorage.delete(locationId)) {
+      onSuccess(storage.delete(locationId)) {
         case true   => complete(NoContent)
         case false  => complete(NotFound)
       }
     }
   }
 
-  @ApiOperation(value = "Searches for a Location", nickname = "searchLocation", httpMethod = "GET", produces = "application/json, application/xml")
+  @ApiOperation(value = "Search Location by description", nickname = "DescriptionLocationSearch", position = 4, httpMethod = "POST", consumes = "application/json", produces = "application/json, application/xml")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "Description", value = "Description", required = true, dataType = "String", paramType = "body")
+  ))
+  @Path("/search")
+  def DescriptionSearch = post {
+    path(LocationsPath / "search") {
+      decompressRequest() {
+        entity(as[String]) { str =>
+          onSuccess(storage.search(str)) { result =>
+            complete(result)
+          }
+        }
+      }
+    }
+  }
+
+  @ApiOperation(value = "Search Location by Signals", nickname = "SignalsLocationSearch", position = 5, httpMethod = "POST", consumes = "application/json", produces = "application/json, application/xml")
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(name = "signals", value = "List of Beacon", required = true, dataType = "SignalSearch", paramType = "body")
+  ))
+  @Path("/signalsearch")
+  def SignalSearchRoute = post {
+    path(LocationsPath / "signalsearch") {
+      decompressRequest() {
+        entity(as[SignalSearch]) { signalSearch =>
+          onSuccess(storage.search(signalSearch)) { result =>
+            complete(result)
+          }
+        }
+      }
+    }
+  }
+
+
+  @ApiOperation(value = "Searches for all Location", nickname = "search all Location", position = 6, httpMethod = "GET", produces = "application/json, application/xml")
   def searchRoute = get {
     path(LocationsPath) {
-      onSuccess(locationESStorage.search()) { result =>
+      onSuccess(storage.search()) { result =>
         complete(result)
       }
     }
   }
 
+
+  // Related: https://github.com/swagger-api/swagger-core/issues/606
+  // Why is this still showing even though it's set to hidden? See https://github.com/martypitt/swagger-springmvc/issues/447
+  @ApiOperation(value = "IGNORE", notes = "", position = 7, hidden = true, httpMethod = "GET", response = classOf[SignalSearch])
+  protected def showSignal = Unit
 }
 

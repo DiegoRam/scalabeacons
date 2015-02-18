@@ -2,7 +2,7 @@ package com.teracode.beacons.storage
 
 import java.util.UUID
 
-import com.teracode.beacons.domain.Location
+import com.teracode.beacons.domain.{SignalSearch, Location}
 import org.json4s.jackson.JsonMethods.parse
 import org.json4s.{jvalue2extractable, string2JsonInput}
 
@@ -38,6 +38,14 @@ object LocationMemoryStorage extends CRUDOps[Location] {
   }
 
   def search(): Future[Seq[Location]] = Future {
+    Locations.values.toList
+  }
+
+  def search(des: String): Future[Seq[Location]] = Future {
+    Locations.values.toList
+  }
+
+  def search(ss: SignalSearch): Future[Seq[Location]] = Future {
     Locations.values.toList
   }
 }
