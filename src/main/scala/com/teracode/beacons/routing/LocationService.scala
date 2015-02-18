@@ -28,7 +28,7 @@ trait LocationService extends HttpService {
 
   val LocationsPath = "locations"
 
-  val routes = addRoute ~ getAllRoute ~ getRoute ~ deleteRoute ~  SignalSearchRoute ~ DescriptionSearch
+  val routes = addRoute ~ getAllRoute ~ getRoute ~ getAllRoute ~ deleteRoute ~ signalSearchRoute ~ descriptionSearchRoute
 
   @ApiOperation(value = "Add a new Location", nickname = "addLocation", position = 2, httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
   @ApiImplicitParams(Array(
@@ -51,15 +51,6 @@ trait LocationService extends HttpService {
     }
   }
 
-  @ApiOperation(value = "Retrieves all Locations", nickname = "retrieve all Locations", position = 6, httpMethod = "GET", produces = "application/json, application/xml")
-  def getAllRoute = get {
-    path(LocationsPath) {
-      onSuccess(storage.retrieveAll()) { result =>
-        complete(result)
-      }
-    }
-  }
-
   @ApiOperation(value = "Gets a Location by Id", notes = "", position = 1, response=classOf[Location], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "id", value = "Id of Location", required = true, dataType = "JavaUUID", paramType = "path")
@@ -76,6 +67,14 @@ trait LocationService extends HttpService {
     }
   }
 
+  @ApiOperation(value = "Retrieves all Locations", nickname = "retrieves all Locations", position = 6, httpMethod = "GET", produces = "application/json, application/xml")
+  def getAllRoute = get {
+    path(LocationsPath) {
+      onSuccess(storage.retrieveAll()) { result =>
+        complete(result)
+      }
+    }
+  }
 
   @ApiOperation(value = "Deletes a Location", nickname = "deleteLocation", position = 3, httpMethod = "DELETE")
   @ApiImplicitParams(Array(
@@ -93,30 +92,28 @@ trait LocationService extends HttpService {
     }
   }
 
-  @ApiOperation(value = "Search Location by description", nickname = "DescriptionLocationSearch", position = 4, httpMethod = "GET", consumes = "application/json", produces = "application/json, application/xml")
+  @ApiOperation(value = "Searchs Locations by description", nickname = "DescriptionLocationSearch", position = 4, httpMethod = "GET", produces = "application/json, application/xml")
   @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "Description", value = "Description", required = true, dataType = "String", paramType = "body")
+    new ApiImplicitParam(name = "description", value = "Description String", required = true, dataType = "String", paramType = "query")
   ))
   @Path("/search")
-  def DescriptionSearch = get {
+  def descriptionSearchRoute = get {
     path(LocationsPath / "search") {
-      decompressRequest() {
-        entity(as[String]) { str =>
-          onSuccess(storage.search(str)) { result =>
-            complete(result)
-          }
+      parameters('description) { description =>
+        onSuccess(storage.search(description)) { result =>
+          complete(result)
         }
       }
     }
   }
 
-  @ApiOperation(value = "Search Location by Signals", nickname = "SignalsLocationSearch", position = 5, httpMethod = "POST", consumes = "application/json", produces = "application/json, application/xml")
+  @ApiOperation(value = "Searchs Locations by Signals", nickname = "SignalsLocationSearch", position = 5, httpMethod = "POST", consumes = "application/json", produces = "application/json, application/xml")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "signals", value = "List of Beacon", required = true, dataType = "SignalSearch", paramType = "body")
   ))
-  @Path("/signalsearch")
-  def SignalSearchRoute = post {
-    path(LocationsPath / "signalsearch") {
+  @Path("/signal-search")
+  def signalSearchRoute = post {
+    path(LocationsPath / "signal-search") {
       decompressRequest() {
         entity(as[LocationSearchByBeacons]) { signalSearch =>
           onSuccess(storage.search(signalSearch)) { result =>
