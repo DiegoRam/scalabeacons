@@ -4,5 +4,5 @@
 target/*
 project/target/*
 project/project/*
-projectFilesBackup/*
+projectFilesBackup*
 data/*
