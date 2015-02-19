@@ -5,7 +5,7 @@ import akka.actor.{ActorLogging, ActorSystem, Props}
 import akka.io.Tcp._
 import com.sksamuel.elastic4s.ElasticClient
 import com.teracode.beacons.routing.{LocationService, RoutedHttpService}
-import com.teracode.beacons.storage.LocationESStorage
+import com.teracode.beacons.persistence.LocationESRepository
 import spray.routing.RouteConcatenation
 
 /**
@@ -47,7 +47,7 @@ trait ElasticSearchCore {
   // Load any settings if needed
   private val client = ElasticClient.local
 
-  val locationESStorage = LocationESStorage(client)
+  val locationESStorage = LocationESRepository(client)
 }
 
 /**

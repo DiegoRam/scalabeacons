@@ -2,9 +2,43 @@ package com.teracode.beacons.domain
 
 import java.util.UUID
 
-case class User(username: String, status: String)
-case class Location(id: UUID, name: String, description: String, status: String, signals: List[Beacon] = List[Beacon]())
-case class Beacon(ssid: String, level: Int)
+/* Model */
+trait Entity {
+  def id: UUID
+}
 
-case class LocationSearchByBeacons(beacons: List[Beacon])
+trait Location {
+  def name: String
+  def description: String
+  def status: String
+  def signals: List[BeaconData]
+}
+
+trait Beacon {
+  def ssid: String
+  def level: Int
+}
+
+/* Data */
+case class LocationData(name: String, description: String, status: String, signals: List[BeaconData]) extends Location
+case class BeaconData(ssid: String, level: Int) extends Beacon
+
+/* Entity */
+case class LocationEntity(id: UUID, name: String, description: String, status: String, signals: List[BeaconData]) extends Location with Entity
+
+object ImplicitEntityConverters {
+
+  implicit def locationDataToLocationEntity(location: LocationData): LocationEntity = {
+    LocationEntity(
+      UUID.randomUUID(),
+      location.name,
+      location.description,
+      location.status,
+      location.signals
+    )
+  }
+}
+
+
+
 
