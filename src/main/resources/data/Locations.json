@@ -106,8 +106,8 @@
   "description" : "Pizza Hut at Scala Mall, fast food pizza and side dishes",
   "status" : "Active",
   "signals" : [
-    {"ssid" : "AP3", "level" : 0.8},
-    {"ssid" : "AP4", "level" : 0.4}
+    {"ssid" : "AP4", "level" : 0.8},
+    {"ssid" : "AP3", "level" : 0.4}
   ]
 },
 {
