@@ -1,8 +1,8 @@
 package com.teracode.beacons.routing
 
 import akka.actor.ActorRefFactory
-import com.teracode.beacons.domain.{ImplicitEntityConverters, LocationData}
-import com.teracode.beacons.persistence.{LocationSearchByBeacons, LocationRepository, CRUDOps, LocationESRepository}
+import com.teracode.beacons.domain.{LocationEntity, ImplicitEntityConverters, LocationData}
+import com.teracode.beacons.persistence._
 import com.wordnik.swagger.annotations._
 import javax.ws.rs.Path
 import spray.http.StatusCodes._
@@ -33,7 +33,7 @@ trait LocationService extends HttpService {
 
   @ApiOperation(value = "Add a new Location", nickname = "addLocation", position = 2, httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
   @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "body", value = "Location object to be added", dataType = "Location", required = true, paramType = "body")
+    new ApiImplicitParam(name = "body", value = "Location object to be added", dataType = "LocationData", required = true, paramType = "body")
   ))
   @ApiResponses(Array(
     new ApiResponse(code = 405, message = "Invalid input")
@@ -52,7 +52,7 @@ trait LocationService extends HttpService {
     }
   }
 
-  @ApiOperation(value = "Gets a Location by Id", notes = "", position = 1, response=classOf[LocationData], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
+  @ApiOperation(value = "Gets a Location by Id", notes = "", position = 1, response=classOf[LocationEntity], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "id", value = "Id of Location", required = true, dataType = "JavaUUID", paramType = "path")
   ))

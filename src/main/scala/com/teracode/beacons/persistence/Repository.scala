@@ -1,6 +1,6 @@
 package com.teracode.beacons.persistence
 
-import com.teracode.beacons.domain.{LocationEntity, BeaconData, LocationData}
+import com.teracode.beacons.domain.{LocationEntity, BeaconData}
 import java.util.UUID
 import scala.concurrent.Future
 

@@ -4,7 +4,7 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.{QueryDefinition, ElasticDsl, ElasticClient}
 
-import com.teracode.beacons.domain.{LocationEntity, Location, LocationData, BeaconData}
+import com.teracode.beacons.domain.{LocationEntity, BeaconData}
 
 import java.util.UUID
 
@@ -43,7 +43,7 @@ class BaseLocationESRepository(val client: ElasticClient) extends LocationESRepo
           "status" typed StringType index NotAnalyzed,
           "signals" typed NestedType as(
             "ssid" typed StringType index NotAnalyzed,
-            "level" typed IntegerType index NotAnalyzed
+            "level" typed DoubleType index NotAnalyzed
             )
           )
         )
@@ -76,7 +76,7 @@ trait LocationESRepository extends ElasticSearchStorage with LocationRepository 
 
   def create(location: LocationEntity): Future[UUID] = Future {
     client.execute(
-      index into indexName -> doctype doc location
+      index into indexName -> doctype doc location id location.id
     )
     location.id
   }

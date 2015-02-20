@@ -16,12 +16,12 @@ trait Location {
 
 trait Beacon {
   def ssid: String
-  def level: Int
+  def level: Double
 }
 
 /* Data */
 case class LocationData(name: String, description: String, status: String, signals: List[BeaconData]) extends Location
-case class BeaconData(ssid: String, level: Int) extends Beacon
+case class BeaconData(ssid: String, level: Double) extends Beacon
 
 /* Entity */
 case class LocationEntity(id: UUID, name: String, description: String, status: String, signals: List[BeaconData]) extends Location with Entity
