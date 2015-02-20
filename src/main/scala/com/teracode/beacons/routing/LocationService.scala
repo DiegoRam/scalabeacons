@@ -1,8 +1,8 @@
 package com.teracode.beacons.routing
 
 import akka.actor.ActorRefFactory
-import com.teracode.beacons.domain.{LocationSearchByBeacons, Location}
-import com.teracode.beacons.storage.{LocationStorage, CRUDOps, LocationESStorage}
+import com.teracode.beacons.domain.{LocationEntity, ImplicitEntityConverters, LocationData}
+import com.teracode.beacons.persistence._
 import com.wordnik.swagger.annotations._
 import javax.ws.rs.Path
 import spray.http.StatusCodes._
@@ -11,10 +11,10 @@ import spray.routing.HttpService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BaseLocationService(val storage: LocationStorage)(implicit val actorRefFactory: ActorRefFactory) extends LocationService
+class BaseLocationService(val storage: LocationRepository)(implicit val actorRefFactory: ActorRefFactory) extends LocationService
 
 object LocationService {
-  def apply(storage: LocationStorage)(implicit actorRefFactory: ActorRefFactory): LocationService = {
+  def apply(storage: LocationRepository)(implicit actorRefFactory: ActorRefFactory): LocationService = {
     new BaseLocationService(storage)(actorRefFactory)
   }
 }
@@ -23,8 +23,9 @@ object LocationService {
 trait LocationService extends HttpService {
 
   import com.teracode.beacons.routing.utils.Json4sSupport._
+  import ImplicitEntityConverters._
 
-  val storage: LocationStorage
+  val storage: LocationRepository
 
   val LocationsPath = "locations"
 
@@ -32,7 +33,7 @@ trait LocationService extends HttpService {
 
   @ApiOperation(value = "Add a new Location", nickname = "addLocation", position = 2, httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
   @ApiImplicitParams(Array(
-    new ApiImplicitParam(name = "body", value = "Location object to be added", dataType = "Location", required = true, paramType = "body")
+    new ApiImplicitParam(name = "body", value = "Location object to be added", dataType = "LocationData", required = true, paramType = "body")
   ))
   @ApiResponses(Array(
     new ApiResponse(code = 405, message = "Invalid input")
@@ -41,7 +42,7 @@ trait LocationService extends HttpService {
     path(LocationsPath) {
       requestUri { uri =>
         decompressRequest() {
-          entity(as[Location]) { location =>
+          entity(as[LocationData]) { location =>
             onSuccess(storage.create(location)) { id =>
               complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
             }
@@ -51,7 +52,7 @@ trait LocationService extends HttpService {
     }
   }
 
-  @ApiOperation(value = "Gets a Location by Id", notes = "", position = 1, response=classOf[Location], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
+  @ApiOperation(value = "Gets a Location by Id", notes = "", position = 1, response=classOf[LocationEntity], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "id", value = "Id of Location", required = true, dataType = "JavaUUID", paramType = "path")
   ))
