@@ -4,6 +4,11 @@ version := "1.0"
 
 scalaVersion := "2.11.5"
 
+//Check this out : http://alvinalexander.com/scala/scala-execute-exec-external-system-commands-in-scala
+
+val compileJade = taskKey[Int]("Compile all jade templates")
+val cleanHtml = taskKey[Int]("Cleaning all html")
+
 libraryDependencies ++= {
   val akkaVersion = "2.3.6"
   val sprayVersion = "1.3.2"
@@ -27,4 +32,15 @@ libraryDependencies ++= {
     "com.sksamuel.elastic4s" %% "elastic4s" % "1.4.11",
     "org.codehaus.groovy" % "groovy-all" % "2.3.2"
   )
+}
+
+cleanHtml := {
+  println("Cleaning old html...")
+  0
+}
+
+compileJade := {
+  cleanHtml.value
+  println("Compiling....")
+  0
 }
