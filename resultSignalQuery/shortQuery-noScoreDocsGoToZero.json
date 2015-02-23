@@ -1,0 +1,33 @@
+{
+"explain": true,
+"query":
+{
+      "nested" : {
+
+        "custom_score": {
+          "query" : {
+            "function_score" : {
+              "filter" : { "bool": {"should": [{"term" : { "ssid" : "AP4" }},{"term" : { "ssid" : "AP3" }}]}},
+              "functions" : [
+                {
+                  "filter" : {"term" : { "ssid" : "AP4" }},
+                  "exp" : { "level" : { "origin" : "0.8", "scale" : "0.2", "offset" : "0.1" }}
+                },
+                {
+                  "filter" : {"term" : { "ssid" : "AP3" }},
+                  "exp" : { "level" : { "origin" : "0.4", "scale" : "0.2", "offset" : "0.1" }}
+
+                }
+              ],
+              "score_mode": "first",
+              "boost_mode": "replace"
+            }
+          },
+          "script": "_score"
+        },
+        "path" : "signals",
+        "score_mode" : "sum"
+      }
+
+}
+}
