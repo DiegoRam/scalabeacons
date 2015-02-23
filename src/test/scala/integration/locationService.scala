@@ -32,6 +32,22 @@ trait Test {
       |  ]
       |}
     """.stripMargin
+
+  val queryPayload =
+    """
+      |{
+      |  "beacons": [
+      |    {
+      |      "ssid": "AP4",
+      |      "level": 0.7
+      |    },
+      |    {
+      |      "ssid": "AP3",
+      |      "level": 0.3
+      |    }
+      |  ]
+      |}
+    """.stripMargin
 }
 
 
@@ -78,6 +94,15 @@ class LocationServiceTest extends Specification with Specs2RouteTest with HttpSe
         unmarshalled \ "description" === expected.description
         unmarshalled \ "signals" === expected.signals
 
+      }
+    }
+
+    "retrieve a payload by a given json query" in {
+      Post("/locations/signal-search", HttpEntity(MediaTypes.`application/json`, queryPayload)) ~> service.signalSearchRoute ~> check {
+        handled must beTrue
+        status === OK
+        val unmarshalled = parse(body.asString)
+        (unmarshalled \\ "score").children(0).asInstanceOf[Double] must beGreaterThan(1.00)
       }
     }
   }
