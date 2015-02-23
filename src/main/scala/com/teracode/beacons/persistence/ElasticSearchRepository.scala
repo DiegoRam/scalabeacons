@@ -119,8 +119,8 @@ trait LocationESRepository extends ElasticSearchStorage with LocationRepository 
     }
 
     def beaconToNestedDecayQueryDefinition(b: BeaconData): QueryDefinition = {
-      nestedQuery("signals").query {
-        functionScoreQuery(matchQuery("ssid", b.ssid)) scorers linearScore("level", b.level.toString, "0.2").offset(0.1)
+      nestedQuery("signals") scoreMode "sum" query {
+        functionScoreQuery(termFilter("ssid", b.ssid)) scorers linearScore("level", b.level.toString, "0.2").offset(0.1)
       }
     }
 

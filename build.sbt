@@ -24,6 +24,7 @@ libraryDependencies ++= {
     "org.json4s" %% "json4s-native" % json4sVersion,
     "org.json4s" %% "json4s-ext" % json4sVersion,
     "com.typesafe" % "config" % "1.2.1",
-    "com.sksamuel.elastic4s" %% "elastic4s" % "1.4.11"
+    "com.sksamuel.elastic4s" %% "elastic4s" % "1.4.11",
+    "org.codehaus.groovy" % "groovy-all" % "2.3.2"
   )
 }

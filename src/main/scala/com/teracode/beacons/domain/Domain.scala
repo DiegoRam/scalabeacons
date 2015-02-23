@@ -38,7 +38,3 @@ object ImplicitEntityConverters {
     )
   }
 }
-
-
-
-
