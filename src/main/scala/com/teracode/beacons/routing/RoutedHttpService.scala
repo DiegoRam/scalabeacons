@@ -60,14 +60,14 @@ class RoutedHttpService(routes: Route) extends HttpServiceActor with ActorLoggin
         }
       } ~ getFromResourceDirectory("swagger-ui")
     } ~
-  get {
-    pathPrefix("ui") {
-      pathEndOrSingleSlash {
-        getFromResource("public/index.html")
-      } ~
-      getFromResourceDirectory("public")
+    get {
+      pathPrefix("ui") {
+        pathEndOrSingleSlash {
+          getFromResource("public/index.html")
+        } ~
+        getFromResourceDirectory("public")
+      }
     }
-  }
 
 
   def receive: Receive =
