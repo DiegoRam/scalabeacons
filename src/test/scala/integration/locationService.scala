@@ -102,7 +102,12 @@ class LocationServiceTest extends Specification with Specs2RouteTest with HttpSe
         handled must beTrue
         status === OK
         val unmarshalled = parse(body.asString)
-        (unmarshalled \\ "score").children(0).asInstanceOf[Double] must beGreaterThan(1.00)
+        val sourceList = for {
+          JObject(child) <- unmarshalled
+          JField("score", JDouble(source)) <- child
+        } yield source
+
+        sourceList must have size(10)
       }
     }
   }
