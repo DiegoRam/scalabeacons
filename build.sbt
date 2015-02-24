@@ -6,8 +6,6 @@ scalaVersion := "2.11.5"
 
 fork in run := true
 
-//Check this out : http://alvinalexander.com/scala/scala-execute-exec-external-system-commands-in-scala
-
 val compileJade = taskKey[Int]("Compile all jade templates")
 val cleanHtml = taskKey[Int]("Cleaning all html")
 
