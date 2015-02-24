@@ -1,4 +1,6 @@
 extends layout
+block script-footer
+    script(src="js/main.js")
 block content
     .container-fluid
         .row
@@ -8,15 +10,15 @@ block content
                     .panel-heading
                         h3 Scala Mall
                     .panel-body
-                        img(src="img/scalamall.jpg", width="700", height="400")
+                        img(src="img/scalamall.jpg", width="700", height="400")#mall
         .row
             .col-md-4
                 .panel-primary
                     .panel-heading
                         p img Coordinates
                     .panel-body
-                        p x 345
-                        p y 567
+                        p#x 0
+                        p#y 0
             .col-md-4
                 .panel-danger
                     .panel-heading
