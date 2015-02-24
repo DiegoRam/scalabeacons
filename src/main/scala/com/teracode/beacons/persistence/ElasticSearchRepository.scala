@@ -109,24 +109,16 @@ trait LocationESRepository extends ElasticSearchStorage with LocationRepository 
 
   def search(ss: LocationSearchByBeacons): Future[Seq[Hit[LocationEntity]]] = {
 
-    def beaconToNestedQueryDefinition(b: BeaconData): QueryDefinition = {
-      nestedQuery("signals").query {
-        must (
-          termQuery("ssid", b.ssid),
-          termQuery("level", b.level)
-        )
-      }
-    }
-
     def beaconToNestedDecayQueryDefinition(b: BeaconData): QueryDefinition = {
       nestedQuery("signals") scoreMode "sum" query {
-        functionScoreQuery(termFilter("ssid", b.ssid)) scorers linearScore("level", b.level.toString, "0.2").offset(0.1)
+        val q = functionScoreQuery(termFilter("ssid", b.ssid)) scorers exponentialScore("level", b.level.toString, "0.2").offset(0.1) boostMode "replace"
+        functionScoreQuery(q) boostMode "replace" scorers scriptScore(s"log(_score*3.0*${b.level})")
       }
     }
 
     val f = client.execute(
       ElasticDsl.search in indexName -> doctype query {
-        should ( ss.beacons.map(b => beaconToNestedDecayQueryDefinition(b)): _*)
+        should ( ss.beacons.map(b => beaconToNestedDecayQueryDefinition(b)): _*) disableCoord true
       } from 0 size 1000
     )
     f map { sr =>
