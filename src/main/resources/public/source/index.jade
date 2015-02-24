@@ -1,0 +1,54 @@
+extends layout
+block content
+    .container-fluid
+        .row
+            .col-md-2
+            .col-md-8
+                .panel-info
+                    .panel-heading
+                        h3 Scala Mall
+                    .panel-body
+                        img(src="img/scalamall.jpg", width="700", height="400")
+        .row
+            .col-md-4
+                .panel-primary
+                    .panel-heading
+                        p img Coordinates
+                    .panel-body
+                        p x 345
+                        p y 567
+            .col-md-4
+                .panel-danger
+                    .panel-heading
+                        p query
+                    .panel-body
+                        code
+                            |{
+                            | "beacons": [
+                            |{
+                            |"ssid": "AP4",
+                            |"level": 0.7
+                            |},
+                            |{
+                            |"ssid": "AP3",
+                            |"level": 0.3
+                            |}]}
+            .col-md-4
+                .panel-success
+                    .panel-heading
+                        p result
+                    .panel-body
+                        code
+                            | {
+                            |"took": 12,
+                            |"timed_out": false,
+                            |"_shards": {
+                            |"total": 5,
+                            |"successful": 5,
+                            |"failed": 0
+                            |},
+                            |"hits": {
+                            |"total": 9,
+                            |"max_score": 1.4142135,
+                            |"hits": [
+

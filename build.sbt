@@ -4,6 +4,13 @@ version := "1.0"
 
 scalaVersion := "2.11.5"
 
+fork in run := true
+
+//Check this out : http://alvinalexander.com/scala/scala-execute-exec-external-system-commands-in-scala
+
+val compileJade = taskKey[Int]("Compile all jade templates")
+val cleanHtml = taskKey[Int]("Cleaning all html")
+
 libraryDependencies ++= {
   val akkaVersion = "2.3.6"
   val sprayVersion = "1.3.2"
@@ -28,3 +35,63 @@ libraryDependencies ++= {
     "org.codehaus.groovy" % "groovy-all" % "2.3.2"
   )
 }
+
+cleanHtml := {
+  import sys.process._
+  val s: TaskStreams = streams.value
+  s.log.info("Cleaning old html files...")
+  "rm src/main/resources/public/index.html" !
+}
+
+cleanHtml := {
+  val s: TaskStreams = streams.value
+  cleanHtml.result.value match {
+    case Inc(inc: Incomplete) => {
+      s.log.error("Error deleting files!")
+      1
+    }
+    case Value(v) => {
+      v match {
+        case 0 => {
+          s.log.info("Files deleted.")
+          0
+        }
+        case 1 => {
+          s.log.error("Files not deleted")
+          1
+        }
+      }
+    }
+  }
+}
+
+compileJade := {
+  import sys.process._
+  cleanHtml.value
+  val s = streams.value
+  s.log.info("Compiling jade...")
+  "jade src/main/resources/public/source/index.jade --out src/main/resources/public" !
+}
+
+compileJade := {
+  val s = streams.value
+  compileJade.result.value match {
+    case Inc(inc: Incomplete) => {
+      s.log.error("Error compiling!")
+      1
+    }
+    case Value(v) => {
+      v match {
+        case 0 => {
+          s.log.info("Compile done.")
+          0
+        }
+        case 1 => {
+          s.log.error("Error compiling jade files!")
+          1
+        }
+      }
+    }
+  }
+}
+
