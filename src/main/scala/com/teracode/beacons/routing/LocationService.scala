@@ -3,10 +3,12 @@ package com.teracode.beacons.routing
 import akka.actor.ActorRefFactory
 import com.teracode.beacons.domain.{LocationEntity, ImplicitEntityConverters, LocationData}
 import com.teracode.beacons.persistence._
+import com.teracode.beacons.routing.utils.UUIDPath
 import com.wordnik.swagger.annotations._
 import javax.ws.rs.Path
 import spray.http.StatusCodes._
 import spray.http.{HttpEntity, HttpHeaders, HttpResponse, StatusCodes}
+import spray.httpx.Json4sJacksonSupport
 import spray.routing.HttpService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,16 +22,23 @@ object LocationService {
 }
 
 @Api(value = "/locations", description = "Operations about location.", produces="application/json", position=1)
-trait LocationService extends HttpService {
+trait LocationService extends HttpService with Json4sJacksonSupport {
 
-  import com.teracode.beacons.routing.utils.Json4sSupport._
   import ImplicitEntityConverters._
+  implicit val json4sJacksonFormats = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
 
   val storage: LocationRepository
 
   val LocationsPath = "locations"
 
-  val routes = addRoute ~ getAllRoute ~ getRoute ~ getAllRoute ~ deleteRoute ~ signalSearchRoute ~ descriptionSearchRoute
+  val routes =
+    addRoute ~
+    getAllRoute ~
+    getRoute ~
+    getAllRoute ~
+    deleteRoute ~
+    signalSearchRoute ~
+    descriptionSearchRoute
 
   @ApiOperation(value = "Add a new Location", nickname = "addLocation", position = 2, httpMethod = "POST", consumes = "application/json, application/vnd.custom.beacon")
   @ApiImplicitParams(Array(
@@ -38,19 +47,33 @@ trait LocationService extends HttpService {
   @ApiResponses(Array(
     new ApiResponse(code = 405, message = "Invalid input")
   ))
-  def addRoute = post {
+  def addRoute =
     path(LocationsPath) {
-      requestUri { uri =>
-        decompressRequest() {
-          entity(as[LocationData]) { location =>
-            onSuccess(storage.create(location)) { id =>
-              complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
+      post {
+        requestUri { uri =>
+          decompressRequest() {
+            entity(as[LocationData]) { location =>
+              onSuccess(storage.create(location)) { id =>
+                complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
+              }
+            }
+          }
+        }
+      }
+    } ~
+    path(LocationsPath / UUIDPath) { uuid =>
+      put {
+        requestUri { uri =>
+          decompressRequest() {
+            entity(as[LocationData]) { location =>
+              onSuccess(storage.create(locationDataToLocationEntity(location).copy(id = uuid))) { id =>
+                complete(HttpResponse(StatusCodes.Created, HttpEntity.Empty, List(HttpHeaders.Location(s"${uri}/${id.toString}"))))
+              }
             }
           }
         }
       }
     }
-  }
 
   @ApiOperation(value = "Gets a Location by Id", notes = "", position = 1, response=classOf[LocationEntity], nickname = "getLocationById", httpMethod = "GET", produces = "application/json, application/vnd.custom.node")
   @ApiImplicitParams(Array(
@@ -97,7 +120,7 @@ trait LocationService extends HttpService {
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "description", value = "Description String", required = true, dataType = "String", paramType = "query")
   ))
-  @Path("/search")
+  @Path("/locations/search")
   def descriptionSearchRoute = get {
     path(LocationsPath / "search") {
       parameters('description) { description =>
