@@ -8,15 +8,27 @@ $(document).ready(function(){
         $('#x').text('x: ' + left);
         $('#y').text('y: ' + top);
 
+        var query = createQuery(left, top);
+        updateQueryPanel(query);
+        callApi(query);
+
     });
 
     function createQuery(x,y){
-        return {};
+        return {beacon: [{ssid: 'Leo Productions', level: 0.7}]};
     }
 
     function callApi(query){
         $.post("/locations/signal-search", {}, function(err, data){
-            return {};
+            showResults([{score: 0.766565},{score: 0.9987}]);
         });
     }
+
+    function updateQueryPanel(query){
+        $('#query').text(JSON.stringify(query))
+    };
+
+    function showResults(data){
+
+    };
 });
