@@ -13,5 +13,6 @@ $(document).ready(function(){
 
     $contextMenu.on("click", "a", function() {
         $contextMenu.hide();
+        $('#createModal').modal('show');
     });
 });

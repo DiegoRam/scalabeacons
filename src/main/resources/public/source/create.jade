@@ -20,3 +20,13 @@ block content
             li.divider
             li
                 a(tabindex="-1", href="#") retrieve AP
+    .modal.fade#createModal(tabindex="-1", role="dialog", aria-labelledby="createModalLabel", aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title#createModalLabel New Location
+                .modal-body
+                    p here we need add the data
+                .modal-footer
+                    button.btn.btn-default(data-dismiss="modal",type="button") Cancel
+                    button.btn.btn-success Save
