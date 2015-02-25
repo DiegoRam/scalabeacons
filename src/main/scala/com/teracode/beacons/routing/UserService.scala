@@ -8,7 +8,7 @@ case class User(username: String, status: String)
 @Api(value = "/user", description = "Operations about users.", produces="application/json", position=1)
 trait UserService extends HttpService {
 
-  import com.teracode.beacons.routing.utils.Json4sSupport._
+  implicit val json4sJacksonFormats = org.json4s.DefaultFormats + org.json4s.ext.UUIDSerializer
 
   val routes = getRoute ~ updateRoute
 

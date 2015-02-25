@@ -126,7 +126,6 @@ trait LocationESRepository extends ElasticSearchStorage with LocationRepository 
     }
   }
 
-
   def search(searchString: String): Future[Seq[Hit[LocationEntity]]] = {
     val f = client.execute(
       ElasticDsl.search in indexName -> doctype query {
