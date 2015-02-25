@@ -1,4 +1,8 @@
 extends layout
+block aditional-css
+    link(rel="stylesheet", href="css/create.css")
+block script-footer
+    script(src="js/create.js")
 block content
     .container-fluid
         .row
@@ -6,6 +10,13 @@ block content
             .col-md-8
                 .panel-info
                     .panel-heading
-                        h4 scala mall
+                        h3 create locations @ Scala Mall
                     .panel-body
-                        img(src="img/scalamall.jpg", width="700", height="400")#mall
+                        img(src="img/scalamall.jpg", width="700", height="400")#scalamall
+    .dropdown.clearfix#contextMenu
+        ul.dropdown-menu(role="menu", aria-labelledby="dropdownMenu", style="display:block;position:static;margin-bottom:5px;")
+            li
+                a(tabindex="-1", href="#") create location here
+            li.divider
+            li
+                a(tabindex="-1", href="#") retrieve AP
