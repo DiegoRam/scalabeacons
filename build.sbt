@@ -38,7 +38,7 @@ cleanHtml := {
   import sys.process._
   val s: TaskStreams = streams.value
   s.log.info("Cleaning old html files...")
-  "rm src/main/resources/public/index.html" !
+  Seq("/bin/sh", "-c", "rm src/main/resources/public/*.html") !
 }
 
 cleanHtml := {
@@ -68,7 +68,7 @@ compileJade := {
   cleanHtml.value
   val s = streams.value
   s.log.info("Compiling jade...")
-  "jade src/main/resources/public/source/index.jade --out src/main/resources/public" !
+  Seq("/bin/sh", "-c","jade src/main/resources/public/source/*.jade --out src/main/resources/public") !
 }
 
 compileJade := {
