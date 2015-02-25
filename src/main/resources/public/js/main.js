@@ -1,4 +1,8 @@
 $(document).ready(function(){
+
+
+    var globalLocations = [{},{}];
+
     $('#mall').click(function(e){
         var offset_t = $(this).offset().top - $(window).scrollTop();
         var offset_l = $(this).offset().left - $(window).scrollLeft();
@@ -29,6 +33,6 @@ $(document).ready(function(){
     };
 
     function showResults(data){
-
+        $('#result').text(data);
     };
 });
