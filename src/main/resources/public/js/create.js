@@ -11,8 +11,13 @@ $(document).ready(function(){
         return false;
     });
 
-    $contextMenu.on("click", "a", function() {
+    $contextMenu.on("click", "#createlink", function() {
         $contextMenu.hide();
         $('#createModal').modal('show');
     });
+    $contextMenu.on("click", "#showlink", function() {
+        $contextMenu.hide();
+        $('#showModal').modal('show');
+    });
+
 });
