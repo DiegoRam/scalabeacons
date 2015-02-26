@@ -3,11 +3,25 @@ html(lang=es)
     head
         title scalaBeacons
         link(rel="stylesheet", href="css/bootstrap.css")
+        block aditional-css
+        script(src="js/jquery/jquery.js")
+        script(src="js/bootstrap.js")
     body
         nav.navbar.navbar-inverse(role="navigation")
             .container-fluid
                 .nav-header#myId
                     a.navbar-brand beacons
-                p.navbar-text.navbar-right by Teracode
+                .collapse.navbar-collapse
+                    ul.nav.navbar-nav
+                        li
+                            a(href="/ui/") query
+                        li
+                            a(href="/ui/create.html") create loc
+                    ul.nav.navbar-nav.navbar-right
+                        li
+                            a(href="")
+                                span.glyphicon.glyphicon-user(style="color: #FFFFFF;")
+                                span teracode
         container-fluid
         block content
+        block script-footer

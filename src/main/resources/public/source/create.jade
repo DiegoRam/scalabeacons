@@ -1,0 +1,83 @@
+extends layout
+block aditional-css
+    link(rel="stylesheet", href="css/create.css")
+block script-footer
+    script(src="js/create.js")
+block content
+    .container-fluid
+        .row
+            .col-md-2
+            .col-md-8
+                .panel-info
+                    .panel-heading
+                        h3 create locations @ Scala Mall
+                    .panel-body
+                        img(src="img/scalamall.jpg", width="700", height="400")#scalamall
+    .dropdown.clearfix#contextMenu
+        ul.dropdown-menu(role="menu", aria-labelledby="dropdownMenu", style="display:block;position:static;margin-bottom:5px;")
+            li
+                a(tabindex="-1", href="#")#createlink create location here
+            li.divider
+            li
+                a(tabindex="-1", href="#")#showlink retrieve AP
+    .modal.fade#createModal(tabindex="-1", role="dialog", aria-labelledby="createModalLabel", aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title#createModalLabel New Location
+                .modal-body
+                    form
+                        .form-group
+                            label.control-label(for="name") Name
+                            input.form-control#name(type="text")
+                        .form-group
+                            label.control-label(for="description") Description
+                            input.form-control#description(type="text")
+                    table.table.table-striped
+                        thead
+                            th #
+                            th SSID
+                            th Level
+                        tbody
+                            tr.active
+                                th(scope="row") 1
+                                td fravega-wifi
+                                td 4
+                            tr
+                                th(scope="row") 2
+                                td Mac-Speedy
+                                td 5
+                .modal-footer
+                    button.btn.btn-default(data-dismiss="modal",type="button") Cancel
+                    button.btn.btn-success Save
+    .modal.fade#showModal(tabindex="-1", role="dialog", aria-labelledby="showModalLabel", aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h4.modal-title#showModalLabel Show details
+                .modal-body
+                    p Name&nbsp
+                        strong Fravega
+                    p Description&nbsp
+                        strong Home Goods
+                    table.table.table-striped
+                        thead
+                            th #
+                            th Name
+                            th Score
+                        tbody
+                            tr.active
+                                th(scope="row") 1
+                                td Fravega
+                                td 1
+                            tr
+                                th(scope="row") 2
+                                td MacDonals
+                                td 0.9
+                            tr
+                                th(scope="row") 3
+                                td City Bank
+                                td 0.7
+
+                .modal-footer
+                    button.btn.btn-default(data-dismiss="modal",type="button") Close

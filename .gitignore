@@ -6,3 +6,4 @@ project/target/*
 project/project/*
 projectFilesBackup*
 data/*
+src/main/resources/public/*.html
