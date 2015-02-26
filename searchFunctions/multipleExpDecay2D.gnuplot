@@ -1,6 +1,6 @@
 #Plot settings
 set term jpeg size 1920,1080 
-set output "multipleExpDecay2dDecay0.2.jpeg"
+set output "multipleExpDecay2d.jpeg"
 
 set grid ytics lt 0 lw 1 lc rgb "#bbbbbb"
 set grid xtics lt 0 lw 1 lc rgb "#bbbbbb"
@@ -12,7 +12,7 @@ max(x,y) = (x > y) ? x : y
 mod(x) = (x<0) ? -x : x
 
 #Score function parameters
-decay = 0.2
+decay = 0.5
 scale = 0.2
 offset = 0.1
 ESValue(x, origin) = max(0., mod(x - origin) - offset)
